@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Triforce Blitz</title>
+</head>
+<body>
+<header></header>
+
+<main>
+    <form name="generator-form" method="post" th:action="@{/generator/generate}" th:object="${form}">
+        <div class="form-group">
+            <label for="version">Version</label>
+            <select id="version" th:field="*{version}">
+                <option value="7.1.143-blitz-0.43">7.1.143-blitz-0.43</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Generate">
+        </div>
+    </form>
+</main>
+
+<footer></footer>
+</body>
+</html>
