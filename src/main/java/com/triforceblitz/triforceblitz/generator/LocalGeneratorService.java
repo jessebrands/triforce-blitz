@@ -6,6 +6,7 @@ import com.triforceblitz.triforceblitz.python.PythonService;
 import com.triforceblitz.triforceblitz.seeds.Seed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -73,6 +74,7 @@ public class LocalGeneratorService implements GeneratorService {
     }
 
     @Override
+    @Cacheable("available-generators")
     public Set<Version> getAvailableVersions() {
         var files = config.getGeneratorsPath().toFile().listFiles();
         if (files == null) {
@@ -82,6 +84,7 @@ public class LocalGeneratorService implements GeneratorService {
                 .filter(File::isDirectory)
                 .map(File::getName)
                 .map(Version::from)
+                .filter(v -> !config.getBlacklistedBranches().contains(v.branch()))
                 .collect(Collectors.toCollection(TreeSet::new))
                 .reversed();
     }
