@@ -8,10 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class LocalGeneratorService implements GeneratorService {
@@ -53,7 +55,7 @@ public class LocalGeneratorService implements GeneratorService {
 
         // Invoke the generator.
         // TODO: The season should be configurable.
-        var process = generator.generateSeed(interpreter, settingsPath, "Triforce Blitz S2");
+        var process = generator.generateSeed(interpreter, settingsPath, "Triforce Blitz");
 
         // Log the output for now. Note that the randomizer outputs to stderr only (lol)
         // TODO: Figure out a better way of redirecting output for later; we'll probably want to capture it
@@ -67,5 +69,18 @@ public class LocalGeneratorService implements GeneratorService {
 
         // Open the spoiler log and retrieve data about the seed.
         return new Seed();
+    }
+
+    @Override
+    public Set<String> getAvailableVersions() {
+        var files = config.getGeneratorsPath().toFile().listFiles();
+        if (files == null) {
+            return Set.of();
+        }
+        return Stream.of(files)
+                .filter(File::isDirectory)
+                .map(File::getName)
+                .sorted(Comparator.reverseOrder())
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 }

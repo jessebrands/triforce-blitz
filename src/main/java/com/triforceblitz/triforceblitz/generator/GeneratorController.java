@@ -20,7 +20,8 @@ public class GeneratorController {
     }
 
     @GetMapping
-    public String getGeneratorForm(@ModelAttribute("form") GeneratorForm form) {
+    public String getGeneratorForm(Model model, @ModelAttribute("form") GeneratorForm form) {
+        model.addAttribute("versions", generatorService.getAvailableVersions());
         return "generator/generator_form";
     }
 

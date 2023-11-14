@@ -14,7 +14,7 @@
         <div class="form-group">
             <label for="version">Version</label>
             <select id="version" th:field="*{version}">
-                <option value="7.1.143-blitz-0.43">7.1.143-blitz-0.43</option>
+                <option th:each="v : ${versions}" th:value="${v}" th:text="${v}">7.1.143-blitz-0.43</option>
             </select>
         </div>
 
