@@ -1,6 +1,7 @@
 package com.triforceblitz.triforceblitz.generator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.triforceblitz.triforceblitz.Version;
 import com.triforceblitz.triforceblitz.python.PythonService;
 import com.triforceblitz.triforceblitz.seeds.Seed;
 import org.slf4j.Logger;
@@ -30,8 +31,8 @@ public class LocalGeneratorService implements GeneratorService {
     }
 
     @Override
-    public Optional<Generator> findGenerator(String version) {
-        var installPath = config.getGeneratorsPath().resolve(version);
+    public Optional<Generator> findGenerator(Version version) {
+        var installPath = config.getGeneratorsPath().resolve(version.toString());
         var entryFile = installPath.resolve("OoTRandomizer.py");
         if (Files.exists(entryFile) && !Files.isDirectory(entryFile)) {
             return Optional.of(new LocalGenerator(installPath));
@@ -40,7 +41,7 @@ public class LocalGeneratorService implements GeneratorService {
     }
 
     @Override
-    public Seed generateSeed(String version, String seed) throws Exception {
+    public Seed generateSeed(Version version, String seed) throws Exception {
         // TODO: Add a more specific exception.
         var generator = findGenerator(version).orElseThrow();
         var interpreter = pythonService.findInterpreter().orElseThrow();
@@ -72,7 +73,7 @@ public class LocalGeneratorService implements GeneratorService {
     }
 
     @Override
-    public Set<String> getAvailableVersions() {
+    public Set<Version> getAvailableVersions() {
         var files = config.getGeneratorsPath().toFile().listFiles();
         if (files == null) {
             return Set.of();
@@ -80,7 +81,8 @@ public class LocalGeneratorService implements GeneratorService {
         return Stream.of(files)
                 .filter(File::isDirectory)
                 .map(File::getName)
-                .sorted(Comparator.reverseOrder())
-                .collect(Collectors.toCollection(TreeSet::new));
+                .map(Version::from)
+                .collect(Collectors.toCollection(TreeSet::new))
+                .reversed();
     }
 }

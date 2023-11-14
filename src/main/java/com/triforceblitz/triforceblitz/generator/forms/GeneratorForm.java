@@ -1,13 +1,15 @@
 package com.triforceblitz.triforceblitz.generator.forms;
 
-public class GeneratorForm {
-    private String version;
+import com.triforceblitz.triforceblitz.Version;
 
-    public String getVersion() {
+public class GeneratorForm {
+    private Version version;
+
+    public Version getVersion() {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(Version version) {
         this.version = version;
     }
 }
