@@ -10,8 +10,12 @@ import java.util.Set;
 
 public interface GeneratorService {
     Optional<Generator> findGenerator(Version version);
+
     Seed generateSeed(Version version, Season season, String seed) throws Exception;
+
     Set<Version> getAvailableVersions();
+
     List<Season> getCompatibleSeasons(Version version);
+
     boolean isSeasonCompatible(Version version, Season season);
 }

@@ -47,13 +47,7 @@ public class LocalGeneratorService implements GeneratorService {
                         Version.from("v6.2.0-blitz-0.1")      // Minimum version
                 ),
                 new SeasonRequirements(
-                        seasonRepository.save(new Season(2, "SGL 2022", "Triforce Blitz")), // Season
-                        List.of("sgl2022"),                          // Valid branches
-                        Version.from("v6.2.158-sgl2022-0.1"),        // Minimum version
-                        Version.from("v6.2.228-sgl2022-0.17")        // Maximum version
-                ),
-                new SeasonRequirements(
-                        seasonRepository.save(new Season(3, "2", "Triforce Blitz S2")),
+                        seasonRepository.save(new Season(2, "2", "Triforce Blitz S2")),
                         List.of("blitz"),                        // Valid branches
                         Version.from("v7.1.3-blitz-0.40")        // Minimum version
                 )
