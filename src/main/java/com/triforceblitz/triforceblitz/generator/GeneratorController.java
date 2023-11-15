@@ -21,13 +21,24 @@ public class GeneratorController {
 
     @GetMapping
     public String getGeneratorForm(Model model, @ModelAttribute("form") GeneratorForm form) {
-        model.addAttribute("versions", generatorService.getAvailableVersions());
+        var availableVersions = generatorService.getAvailableVersions();
+        var defaultVersion = availableVersions.stream().findFirst().orElseThrow();
+        var seasons = generatorService.getCompatibleSeasons(defaultVersion);
+        var defaultSeason = seasons.stream().findFirst().orElseThrow();
+
+        // Set the form values.
+        form.setVersion(defaultVersion);
+        form.setSeason(defaultSeason);
+
+        // Update the model
+        model.addAttribute("versions", availableVersions);
+        model.addAttribute("seasons", seasons);
         return "generator/generator_form";
     }
 
     @PostMapping("/generate")
     public String generateSeed(Model model, @ModelAttribute("form") GeneratorForm form) throws Exception {
-        generatorService.generateSeed(form.getVersion(), UUID.randomUUID().toString());
+        generatorService.generateSeed(form.getVersion(), form.getSeason(), UUID.randomUUID().toString());
         return "generator/generator_form";
     }
 }

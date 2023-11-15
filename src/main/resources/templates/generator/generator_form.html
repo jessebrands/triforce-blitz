@@ -19,6 +19,13 @@
         </div>
 
         <div class="form-group">
+            <label th:each="s : ${seasons}">
+                <input type="radio" th:field="*{season}" th:value="${s.uuid}">
+                <span th:text="${'Season ' + s.name}">Season 1</span>
+            </label>
+        </div>
+
+        <div class="form-group">
             <input type="submit" value="Generate">
         </div>
     </form>

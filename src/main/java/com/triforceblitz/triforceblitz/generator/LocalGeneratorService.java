@@ -3,6 +3,8 @@ package com.triforceblitz.triforceblitz.generator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.triforceblitz.triforceblitz.Version;
 import com.triforceblitz.triforceblitz.python.PythonService;
+import com.triforceblitz.triforceblitz.seeds.Season;
+import com.triforceblitz.triforceblitz.seeds.SeasonRepository;
 import com.triforceblitz.triforceblitz.seeds.Seed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +25,39 @@ public class LocalGeneratorService implements GeneratorService {
 
     private final GeneratorConfig config;
     private final PythonService pythonService;
+    private final SeasonRepository seasonRepository;
     private final ObjectMapper objectMapper;
 
-    public LocalGeneratorService(GeneratorConfig config, PythonService pythonService, ObjectMapper objectMapper) {
+    private final List<SeasonRequirements> seasonRequirements = new ArrayList<>();
+
+    public LocalGeneratorService(GeneratorConfig config,
+                                 PythonService pythonService,
+                                 SeasonRepository seasonRepository,
+                                 ObjectMapper objectMapper) {
         this.config = config;
         this.pythonService = pythonService;
+        this.seasonRepository = seasonRepository;
         this.objectMapper = objectMapper;
+
+        // Create some fake requirements for now!
+        seasonRequirements.addAll(List.of(
+                new SeasonRequirements(
+                        seasonRepository.save(new Season(1, "1", "Triforce Blitz")),
+                        List.of("blitz"),                     // Valid branches
+                        Version.from("v6.2.0-blitz-0.1")      // Minimum version
+                ),
+                new SeasonRequirements(
+                        seasonRepository.save(new Season(2, "SGL 2022", "Triforce Blitz")), // Season
+                        List.of("sgl2022"),                          // Valid branches
+                        Version.from("v6.2.158-sgl2022-0.1"),        // Minimum version
+                        Version.from("v6.2.228-sgl2022-0.17")        // Maximum version
+                ),
+                new SeasonRequirements(
+                        seasonRepository.save(new Season(3, "2", "Triforce Blitz S2")),
+                        List.of("blitz"),                        // Valid branches
+                        Version.from("v7.1.3-blitz-0.40")        // Minimum version
+                )
+        ));
     }
 
     @Override
@@ -42,7 +71,10 @@ public class LocalGeneratorService implements GeneratorService {
     }
 
     @Override
-    public Seed generateSeed(Version version, String seed) throws Exception {
+    public Seed generateSeed(Version version, Season season, String seed) throws Exception {
+        if (!isSeasonCompatible(version, season)) {
+            throw new RuntimeException("season incompatible with version");
+        }
         // TODO: Add a more specific exception.
         var generator = findGenerator(version).orElseThrow();
         var interpreter = pythonService.findInterpreter().orElseThrow();
@@ -56,8 +88,7 @@ public class LocalGeneratorService implements GeneratorService {
         objectMapper.writeValue(settingsPath.toFile(), settings);
 
         // Invoke the generator.
-        // TODO: The season should be configurable.
-        var process = generator.generateSeed(interpreter, settingsPath, "Triforce Blitz");
+        var process = generator.generateSeed(interpreter, settingsPath, season.getPreset());
 
         // Log the output for now. Note that the randomizer outputs to stderr only (lol)
         // TODO: Figure out a better way of redirecting output for later; we'll probably want to capture it
@@ -80,6 +111,7 @@ public class LocalGeneratorService implements GeneratorService {
         if (files == null) {
             return Set.of();
         }
+
         return Stream.of(files)
                 .filter(File::isDirectory)
                 .map(File::getName)
@@ -87,5 +119,18 @@ public class LocalGeneratorService implements GeneratorService {
                 .filter(v -> !config.getBlacklistedBranches().contains(v.branch()))
                 .collect(Collectors.toCollection(TreeSet::new))
                 .reversed();
+    }
+
+    @Override
+    public List<Season> getCompatibleSeasons(Version version) {
+        return seasonRequirements.stream()
+                .filter(req -> req.satisfiesRequirements(version))
+                .map(SeasonRequirements::getSeason)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isSeasonCompatible(Version version, Season season) {
+        return getCompatibleSeasons(version).contains(season);
     }
 }
