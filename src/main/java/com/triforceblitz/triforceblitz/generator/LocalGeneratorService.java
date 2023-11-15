@@ -2,6 +2,7 @@ package com.triforceblitz.triforceblitz.generator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.triforceblitz.triforceblitz.Version;
+import com.triforceblitz.triforceblitz.generator.events.GeneratorStatusEvent;
 import com.triforceblitz.triforceblitz.python.PythonService;
 import com.triforceblitz.triforceblitz.seeds.Season;
 import com.triforceblitz.triforceblitz.seeds.SeasonRepository;
@@ -9,6 +10,8 @@ import com.triforceblitz.triforceblitz.seeds.Seed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -23,6 +26,7 @@ import java.util.stream.Stream;
 public class LocalGeneratorService implements GeneratorService {
     private final static Logger logger = LoggerFactory.getLogger(LocalGeneratorService.class);
 
+    private final ApplicationEventPublisher eventPublisher;
     private final GeneratorConfig config;
     private final PythonService pythonService;
     private final SeasonRepository seasonRepository;
@@ -30,10 +34,12 @@ public class LocalGeneratorService implements GeneratorService {
 
     private final List<SeasonRequirements> seasonRequirements = new ArrayList<>();
 
-    public LocalGeneratorService(GeneratorConfig config,
+    public LocalGeneratorService(ApplicationEventPublisher eventPublisher,
+                                 GeneratorConfig config,
                                  PythonService pythonService,
                                  SeasonRepository seasonRepository,
                                  ObjectMapper objectMapper) {
+        this.eventPublisher = eventPublisher;
         this.config = config;
         this.pythonService = pythonService;
         this.seasonRepository = seasonRepository;
@@ -65,7 +71,7 @@ public class LocalGeneratorService implements GeneratorService {
     }
 
     @Override
-    public Seed generateSeed(Version version, Season season, String seed) throws Exception {
+    public Seed generateSeed(Version version, Season season, String seed, @Nullable String requestId) throws Exception {
         if (!isSeasonCompatible(version, season)) {
             throw new RuntimeException("season incompatible with version");
         }
@@ -90,7 +96,7 @@ public class LocalGeneratorService implements GeneratorService {
         var stdin = new BufferedReader(new InputStreamReader(process.getErrorStream()));
         var line = "";
         while ((line = stdin.readLine()) != null) {
-            logger.info("OoTRandomizer: {}", line);
+            eventPublisher.publishEvent(new GeneratorStatusEvent(this, uuid, line, requestId));
         }
         process.waitFor();
 

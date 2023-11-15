@@ -1,0 +1,11 @@
+.generator-log {
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+.generator-log__message {
+    font-family: monospace;
+    text-wrap: none;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}

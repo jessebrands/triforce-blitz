@@ -6,14 +6,24 @@
  * responses.
  */
 
+const log = document.getElementById("generator-log");
+
+function logMessage(message) {
+    const el = document.createElement("div");
+    el.innerText = message;
+    el.className = "generator-log__message"
+    log.appendChild(el);
+}
+
 const client = new StompJs.Client({
     brokerURL: "ws://" + location.host + "/ws",
     onConnect: () => {
-        client.subscribe("/user/topic/generator/status", message => {
-            console.log("Generator status", message);
+        client.subscribe("/user/topic/generator/status", frame => {
+            const {message} = JSON.parse(frame.body);
+            logMessage(message);
         });
 
-        console.log("Connected to server, STOMP protocol version " + client.connectedVersion);
+        logMessage("Connected to Triforce Blitz Generator Service");
     },
 });
 

@@ -31,7 +31,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // TODO: We should definitely not be allowing all origins!
         registry.addEndpoint("/ws")
-                .addInterceptors(new SessionHandshakeInterceptor())
+             // .addInterceptors(new SessionHandshakeInterceptor())
                 .setAllowedOrigins("*");
     }
 }
