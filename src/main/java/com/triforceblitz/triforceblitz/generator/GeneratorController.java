@@ -1,13 +1,12 @@
 package com.triforceblitz.triforceblitz.generator;
 
+import com.triforceblitz.triforceblitz.Version;
 import com.triforceblitz.triforceblitz.generator.forms.GeneratorForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.UUID;
 
 @Controller
@@ -24,7 +23,9 @@ public class GeneratorController {
         var availableVersions = generatorService.getAvailableVersions();
         var defaultVersion = availableVersions.stream().findFirst().orElseThrow();
         var seasons = generatorService.getCompatibleSeasons(defaultVersion);
-        var defaultSeason = seasons.stream().findFirst().orElseThrow();
+        var defaultSeason = seasons.stream()
+                .max(Comparator.naturalOrder())
+                .orElse(null);
 
         // Set the form values.
         form.setVersion(defaultVersion);
@@ -40,5 +41,19 @@ public class GeneratorController {
     public String generateSeed(Model model, @ModelAttribute("form") GeneratorForm form) throws Exception {
         generatorService.generateSeed(form.getVersion(), form.getSeason(), UUID.randomUUID().toString());
         return "generator/generator_form";
+    }
+
+    @GetMapping("/options")
+    public String getGeneratorOptions(@RequestParam Version version,
+                                      Model model) {
+        var seasons = generatorService.getCompatibleSeasons(version);
+        var defaultSeason = seasons.stream()
+                .max(Comparator.naturalOrder())
+                .orElse(null);
+
+        // Update the model
+        model.addAttribute("seasons", !seasons.isEmpty() ? seasons : null);
+        model.addAttribute("activeSeason", defaultSeason);
+        return "generator/fragments/options";
     }
 }
