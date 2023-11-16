@@ -2,7 +2,6 @@ package com.triforceblitz.triforceblitz.generator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.triforceblitz.triforceblitz.Version;
-import com.triforceblitz.triforceblitz.generator.events.GeneratorStatusEvent;
 import com.triforceblitz.triforceblitz.python.PythonService;
 import com.triforceblitz.triforceblitz.seeds.Season;
 import com.triforceblitz.triforceblitz.seeds.SeasonRepository;
@@ -14,17 +13,18 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
-public class LocalGeneratorService implements GeneratorService {
-    private final static Logger logger = LoggerFactory.getLogger(LocalGeneratorService.class);
+public class QueuedGeneratorService implements GeneratorService {
+    private final static Logger logger = LoggerFactory.getLogger(QueuedGeneratorService.class);
+
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private final ApplicationEventPublisher eventPublisher;
     private final GeneratorConfig config;
@@ -34,11 +34,11 @@ public class LocalGeneratorService implements GeneratorService {
 
     private final List<SeasonRequirements> seasonRequirements = new ArrayList<>();
 
-    public LocalGeneratorService(ApplicationEventPublisher eventPublisher,
-                                 GeneratorConfig config,
-                                 PythonService pythonService,
-                                 SeasonRepository seasonRepository,
-                                 ObjectMapper objectMapper) {
+    public QueuedGeneratorService(ApplicationEventPublisher eventPublisher,
+                                  GeneratorConfig config,
+                                  PythonService pythonService,
+                                  SeasonRepository seasonRepository,
+                                  ObjectMapper objectMapper) {
         this.eventPublisher = eventPublisher;
         this.config = config;
         this.pythonService = pythonService;
@@ -80,27 +80,11 @@ public class LocalGeneratorService implements GeneratorService {
         var interpreter = pythonService.findInterpreter().orElseThrow();
         var uuid = UUID.randomUUID();
         var outputPath = config.getSeedsPath().resolve(uuid.toString());
-
-        // Create output directory and write out the settings file.
-        Files.createDirectories(outputPath);
-        var settingsPath = outputPath.resolve("settings.json");
         var settings = new GeneratorSettings(config.getRom(), outputPath, seed);
-        objectMapper.writeValue(settingsPath.toFile(), settings);
 
-        // Invoke the generator.
-        var process = generator.generateSeed(interpreter, settingsPath, season.getPreset());
-
-        // Log the output for now. Note that the randomizer outputs to stderr only (lol)
-        // TODO: Figure out a better way of redirecting output for later; we'll probably want to capture it
-        //       for some kind of progress indicator on the frontend later.
-        var stdin = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-        var line = "";
-        while ((line = stdin.readLine()) != null) {
-            eventPublisher.publishEvent(new GeneratorStatusEvent(this, uuid, line, requestId));
-        }
-        process.waitFor();
-
-        // Open the spoiler log and retrieve data about the seed.
+        // Send off our task to the executor.
+        logger.info("Handing off seed generation task to the executor.");
+        executor.execute(new GeneratorTask(interpreter, generator, season.getPreset(), settings, eventPublisher));
         return new Seed();
     }
 
