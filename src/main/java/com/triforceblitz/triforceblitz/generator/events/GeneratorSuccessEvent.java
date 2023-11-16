@@ -3,21 +3,20 @@ package com.triforceblitz.triforceblitz.generator.events;
 import com.triforceblitz.triforceblitz.seeds.Seed;
 import org.springframework.context.ApplicationEvent;
 
-public class GeneratorLogEvent extends ApplicationEvent {
+/**
+ * This event is fired when the Generator has successfully finished generating the seed.
+ *
+ * @author Jesse
+ */
+public class GeneratorSuccessEvent extends ApplicationEvent {
     private final Seed seed;
-    private final String message;
 
-    public GeneratorLogEvent(Object source, Seed seed, String message) {
+    public GeneratorSuccessEvent(Object source, Seed seed) {
         super(source);
         this.seed = seed;
-        this.message = message;
     }
 
     public Seed getSeed() {
         return seed;
-    }
-
-    public String getMessage() {
-        return message;
     }
 }

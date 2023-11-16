@@ -3,21 +3,20 @@ package com.triforceblitz.triforceblitz.generator.events;
 import com.triforceblitz.triforceblitz.seeds.Seed;
 import org.springframework.context.ApplicationEvent;
 
-public class GeneratorLogEvent extends ApplicationEvent {
+/**
+ * Describes an event sent from a Generator task indicating its task has begun.
+ *
+ * @author Jesse
+ */
+public class GeneratorStartedEvent extends ApplicationEvent {
     private final Seed seed;
-    private final String message;
 
-    public GeneratorLogEvent(Object source, Seed seed, String message) {
+    public GeneratorStartedEvent(Object source, Seed seed) {
         super(source);
         this.seed = seed;
-        this.message = message;
     }
 
     public Seed getSeed() {
         return seed;
-    }
-
-    public String getMessage() {
-        return message;
     }
 }

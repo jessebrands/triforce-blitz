@@ -3,21 +3,20 @@ package com.triforceblitz.triforceblitz.generator.events;
 import com.triforceblitz.triforceblitz.seeds.Seed;
 import org.springframework.context.ApplicationEvent;
 
-public class GeneratorLogEvent extends ApplicationEvent {
+/**
+ * This application event is sent when a Generator task fails to generate a seed.
+ *
+ * @author Jesse
+ */
+public class GeneratorFailureEvent extends ApplicationEvent {
     private final Seed seed;
-    private final String message;
 
-    public GeneratorLogEvent(Object source, Seed seed, String message) {
+    public GeneratorFailureEvent(Object source, Seed seed) {
         super(source);
         this.seed = seed;
-        this.message = message;
     }
 
     public Seed getSeed() {
         return seed;
-    }
-
-    public String getMessage() {
-        return message;
     }
 }

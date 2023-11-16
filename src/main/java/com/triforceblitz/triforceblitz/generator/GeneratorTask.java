@@ -1,8 +1,9 @@
 package com.triforceblitz.triforceblitz.generator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.triforceblitz.triforceblitz.generator.events.GeneratorLogEvent;
+import com.triforceblitz.triforceblitz.generator.events.*;
 import com.triforceblitz.triforceblitz.python.PythonInterpreter;
+import com.triforceblitz.triforceblitz.seeds.Seed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -22,15 +23,17 @@ public class GeneratorTask implements Runnable {
 
     private final PythonInterpreter interpreter;
     private final Generator generator;
+    private final Seed seed;
     private final String preset;
     private final GeneratorSettings settings;
     private final ApplicationEventPublisher publisher;
 
-    public GeneratorTask(PythonInterpreter interpreter, Generator generator, String preset,
-                         GeneratorSettings settings,
+    public GeneratorTask(PythonInterpreter interpreter, Generator generator, Seed seed,
+                         String preset, GeneratorSettings settings,
                          ApplicationEventPublisher publisher) {
         this.interpreter = interpreter;
         this.generator = generator;
+        this.seed = seed;
         this.preset = preset;
         this.settings = settings;
         this.publisher = publisher;
@@ -39,6 +42,7 @@ public class GeneratorTask implements Runnable {
     @Override
     public void run() {
         logger.info("Seed generation started!");
+        publisher.publishEvent(new GeneratorStartedEvent(this, seed));
         var objectMapper = new ObjectMapper();
         var outputPath = Path.of(settings.getOutputPath());
         var settingsPath = outputPath.resolve("settings.json");
@@ -49,6 +53,7 @@ public class GeneratorTask implements Runnable {
             objectMapper.writeValue(settingsPath.toFile(), settings);
         } catch (Exception e) {
             logger.error("Failed to create output directory: {}", e.getMessage());
+            publisher.publishEvent(new GeneratorErrorEvent(this, seed, e));
             return;
         }
 
@@ -60,17 +65,20 @@ public class GeneratorTask implements Runnable {
             var in = new BufferedReader(new InputStreamReader(process.getErrorStream()));
             var line = "";
             while ((line = in.readLine()) != null) {
-                publisher.publishEvent(new GeneratorLogEvent(this, line));
+                publisher.publishEvent(new GeneratorLogEvent(this, seed, line));
             }
 
             var result = process.waitFor();
             if (result == 0) {
                 logger.info("Seed generation finished successfully!");
+                publisher.publishEvent(new GeneratorSuccessEvent(this, seed));
             } else {
                 logger.warn("Seed generation failed.");
+                publisher.publishEvent(new GeneratorFailureEvent(this, seed));
             }
         } catch (Exception e) {
             logger.error("Failed to generate seed: {}", e.getMessage());
+            publisher.publishEvent(new GeneratorErrorEvent(this, seed, e));
         }
     }
 }
