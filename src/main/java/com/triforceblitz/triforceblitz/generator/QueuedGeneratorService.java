@@ -1,11 +1,11 @@
 package com.triforceblitz.triforceblitz.generator;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.triforceblitz.triforceblitz.Version;
 import com.triforceblitz.triforceblitz.python.PythonService;
 import com.triforceblitz.triforceblitz.seeds.Season;
 import com.triforceblitz.triforceblitz.seeds.SeasonRepository;
 import com.triforceblitz.triforceblitz.seeds.Seed;
+import com.triforceblitz.triforceblitz.seeds.SeedRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -28,8 +28,7 @@ public class QueuedGeneratorService implements GeneratorService {
     private final ApplicationEventPublisher eventPublisher;
     private final GeneratorConfig config;
     private final PythonService pythonService;
-    private final SeasonRepository seasonRepository;
-    private final ObjectMapper objectMapper;
+    private final SeedRepository seedRepository;
 
     private final List<SeasonRequirements> seasonRequirements = new ArrayList<>();
 
@@ -37,12 +36,11 @@ public class QueuedGeneratorService implements GeneratorService {
                                   GeneratorConfig config,
                                   PythonService pythonService,
                                   SeasonRepository seasonRepository,
-                                  ObjectMapper objectMapper) {
+                                  SeedRepository seedRepository) {
         this.eventPublisher = eventPublisher;
         this.config = config;
         this.pythonService = pythonService;
-        this.seasonRepository = seasonRepository;
-        this.objectMapper = objectMapper;
+        this.seedRepository = seedRepository;
 
         // Create some fake requirements for now!
         seasonRequirements.addAll(List.of(
@@ -70,21 +68,20 @@ public class QueuedGeneratorService implements GeneratorService {
     }
 
     @Override
-    public Seed generateSeed(Version version, Season season, String seed) throws Exception {
+    public Seed generateSeed(Version version, Season season, String generatorSeed) throws Exception {
         if (!isSeasonCompatible(version, season)) {
             throw new RuntimeException("season incompatible with version");
         }
-        // TODO: Add a more specific exception.
+
+        var seed = Seed.create(version, season, generatorSeed);
         var generator = findGenerator(version).orElseThrow();
         var interpreter = pythonService.findInterpreter().orElseThrow();
-        var uuid = UUID.randomUUID();
-        var outputPath = config.getSeedsPath().resolve(uuid.toString());
-        var settings = new GeneratorSettings(config.getRom(), outputPath, seed);
+        var outputPath = config.getSeedsPath().resolve(seed.getId().toString());
+        var settings = new GeneratorSettings(config.getRom(), outputPath, generatorSeed);
 
-        // Send off our task to the executor.
         logger.info("Handing off seed generation task to the executor.");
-        executor.execute(new GeneratorTask(interpreter, generator, season.getPreset(), settings, eventPublisher));
-        return new Seed();
+        executor.execute(new GeneratorTask(interpreter, generator, seed, season.getPreset(), settings, eventPublisher));
+        return seedRepository.save(seed);
     }
 
     @Override
