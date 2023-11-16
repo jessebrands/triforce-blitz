@@ -38,14 +38,14 @@ public class GeneratorController {
     }
 
     @PostMapping("/generate")
-    public String generateSeed(Model model, @ModelAttribute("form") GeneratorForm form) throws Exception {
-        generatorService.generateSeed(form.getVersion(), form.getSeason(), UUID.randomUUID().toString());
-        return "generate";
+    public String generateSeed(@ModelAttribute("form") GeneratorForm form) throws Exception {
+        var generatorSeed = UUID.randomUUID().toString();
+        var seed = generatorService.generateSeed(form.getVersion(), form.getSeason(), generatorSeed);
+        return "redirect:/seeds/" + seed.getId();
     }
 
     @GetMapping("/options")
-    public String getGeneratorOptions(@RequestParam Version version,
-                                      Model model) {
+    public String getGeneratorOptions(@RequestParam Version version, Model model) {
         var seasons = generatorService.getCompatibleSeasons(version);
         var defaultSeason = seasons.stream()
                 .max(Comparator.naturalOrder())
