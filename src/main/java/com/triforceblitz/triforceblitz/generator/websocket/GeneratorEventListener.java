@@ -10,9 +10,15 @@ import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.regex.Pattern;
+
 @Component
 public class GeneratorEventListener {
     private final static Logger logger = LoggerFactory.getLogger(GeneratorEventListener.class);
+    private final static Pattern FILTER_PATTERN = Pattern.compile(
+            "\\bsphere|file|settings|seed|spoiler log|patch? file|version\\b", Pattern.CASE_INSENSITIVE
+    );
+
     private final SimpMessagingTemplate template;
 
     private MessageHeaders createHeaders(String sessionId) {
@@ -29,7 +35,9 @@ public class GeneratorEventListener {
     @EventListener
     public void onStatusEvent(GeneratorStatusEvent event) {
         var sessionId = event.getSessionId();
-        if (sessionId != null) {
+        var matcher = FILTER_PATTERN.matcher(event.getMessage());
+
+        if (sessionId != null && !matcher.find()) {
             var payload = new GeneratorStatusMessage(event.getMessage());
             template.convertAndSendToUser(sessionId, "/topic/generator/status", payload, createHeaders(sessionId));
         }
