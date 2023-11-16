@@ -5,12 +5,52 @@
       layout:decorate="~{layout.html}">
 <head>
   <title>Triforce Blitz Seed</title>
+
+  <script th:src="@{/webjars/stomp__stompjs/bundles/stomp.umd.min.js}"></script>
+
+  <script type="module" defer>
+    const seedId = "[[${seed.id}]]";
+    const logElement = document.getElementById("seed-log");
+
+    function pushLogMessage(msg) {
+      const el = document.createElement("div");
+      el.className = "log-message"
+      el.innerText = msg;
+      logElement.appendChild(el);
+      logElement.scrollTop = logElement.scrollHeight;
+    }
+
+    // Create our STOMP client.
+    const client = new StompJs.Client({
+      brokerURL: "ws://" + window.location.host + "/ws",
+      reconnectDelay: 5000,
+    });
+
+    client.onConnect = () => {
+      client.subscribe("/topic/seeds/" + seedId + "/log", frame => {
+        const data = JSON.parse(frame.body);
+        const timestamp = new Date(data.timestamp);
+        const message = data.message;
+        pushLogMessage("["+ timestamp.toLocaleTimeString() + "] " + message)
+      });
+      console.log("Connected to Triforce Blitz service.");
+    }
+
+    client.activate();
+  </script>
 </head>
 
 <body>
 
 <main layout:fragment="content">
-  <p>Placeholder, displaying details for seed <span th:text="${seed.id}">ID</span></p>
+  <div th:if="${seed.generatedOn}">
+    The seed has finished generating, this a place holder...
+  </div>
+  <div th:unless="${seed.generatedOn}" class="info-dialog">
+    <h1>Please wait, your seed is being generated...</h1>
+    <p>We got your request successfully, just sit back and wait... this will only take a moment!</p>
+    <div id="seed-log" class="generator-log"></div>
+  </div>
 </main>
 
 </body>

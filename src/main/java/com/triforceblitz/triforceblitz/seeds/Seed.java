@@ -13,6 +13,9 @@ public class Seed {
     private final String seed;
     private final Instant requestedOn;
 
+    @Nullable
+    private Instant generatedOn;
+
     public Seed(UUID id, Version version, Season season, String seed, Instant requestedOn) {
         this.id = id;
         this.version = version;
@@ -30,9 +33,6 @@ public class Seed {
                 Instant.now()
         );
     }
-
-    @Nullable
-    private Instant generatedOn;
 
     public UUID getId() {
         return id;
@@ -52,5 +52,14 @@ public class Seed {
 
     public Instant getRequestedOn() {
         return requestedOn;
+    }
+
+    @Nullable
+    public Instant getGeneratedOn() {
+        return generatedOn;
+    }
+
+    public void setGeneratedOn(@Nullable Instant generatedOn) {
+        this.generatedOn = generatedOn;
     }
 }
