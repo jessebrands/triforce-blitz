@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -71,7 +70,7 @@ public class QueuedGeneratorService implements GeneratorService {
     }
 
     @Override
-    public Seed generateSeed(Version version, Season season, String seed, @Nullable String requestId) throws Exception {
+    public Seed generateSeed(Version version, Season season, String seed) throws Exception {
         if (!isSeasonCompatible(version, season)) {
             throw new RuntimeException("season incompatible with version");
         }

@@ -34,13 +34,13 @@ public class GeneratorController {
         // Update the model
         model.addAttribute("versions", availableVersions);
         model.addAttribute("seasons", seasons);
-        return "generator/generator_form";
+        return "generator/generate";
     }
 
     @PostMapping("/generate")
     public String generateSeed(Model model, @ModelAttribute("form") GeneratorForm form) throws Exception {
         generatorService.generateSeed(form.getVersion(), form.getSeason(), UUID.randomUUID().toString());
-        return "generator/generator_form";
+        return "generate";
     }
 
     @GetMapping("/options")

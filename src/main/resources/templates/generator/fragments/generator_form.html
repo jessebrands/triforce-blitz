@@ -1,0 +1,19 @@
+<form th:fragment="form(formObject, versions, seasons)"
+      name="generator-form" id="generator-form" method="post"
+      th:action="@{/generator/generate}" th:object="${__${formObject}__}">
+  <div class="form-group">
+    <label for="generator-version">Version</label>
+    <select id="generator-version" th:field="*{version}"
+            hx-get="/generator/options" hx-target="#generator-options" hx-swap="outerHTML">
+      <option th:each="v : ${versions}" th:value="${v}" th:text="${v}">7.1.143-blitz-0.43</option>
+    </select>
+  </div>
+
+  <div id="generator-options"
+       th:replace="~{generator/fragments/options :: options(${seasons}, *{season})}">
+  </div>
+
+  <div class="form-group">
+    <input id="generator-submit" type="submit" value="Generate">
+  </div>
+</form>

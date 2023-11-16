@@ -1,7 +1,7 @@
 package com.triforceblitz.triforceblitz.generator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.triforceblitz.triforceblitz.generator.events.GeneratorStatusEvent;
+import com.triforceblitz.triforceblitz.generator.events.GeneratorLogEvent;
 import com.triforceblitz.triforceblitz.python.PythonInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +11,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.UUID;
 
 /**
  * GeneratorTask is the actual work payload that does the actual work of generating a seed.
@@ -61,7 +60,7 @@ public class GeneratorTask implements Runnable {
             var in = new BufferedReader(new InputStreamReader(process.getErrorStream()));
             var line = "";
             while ((line = in.readLine()) != null) {
-                publisher.publishEvent(new GeneratorStatusEvent(this, UUID.randomUUID(), line));
+                publisher.publishEvent(new GeneratorLogEvent(this, line));
             }
 
             var result = process.waitFor();

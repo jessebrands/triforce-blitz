@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}">
+<head>
+    <title>Generate a Triforce Blitz seed</title>
+</head>
+
+<body>
+
+<main layout:fragment="content">
+    <form th:replace="~{generator/fragments/generator_form::form('form', ${versions}, ${seasons})}"></form>
+</main>
+
+</body>
+</html>
