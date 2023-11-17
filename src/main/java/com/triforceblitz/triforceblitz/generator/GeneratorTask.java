@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.triforceblitz.triforceblitz.generator.events.*;
 import com.triforceblitz.triforceblitz.python.PythonInterpreter;
 import com.triforceblitz.triforceblitz.seeds.Seed;
+import com.triforceblitz.triforceblitz.seeds.Spoiler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -12,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 
 /**
  * GeneratorTask is the actual work payload that does the actual work of generating a seed.
@@ -69,13 +71,20 @@ public class GeneratorTask implements Runnable {
             }
 
             var result = process.waitFor();
-            if (result == 0) {
-                logger.info("Seed generation finished successfully!");
-                publisher.publishEvent(new GeneratorSuccessEvent(this, seed));
-            } else {
+            if (result != 0) {
                 logger.warn("Seed generation failed.");
                 publisher.publishEvent(new GeneratorFailureEvent(this, seed));
             }
+
+            logger.info("Reading generated seed's spoiler log.");
+            var spoiler = objectMapper.readValue(settings.getSpoilerLogPath().toFile(), Spoiler.class);
+            seed.setGeneratorVersion(spoiler.getRandomizerVersion());
+            seed.setHash(spoiler.getHash());
+            seed.setSettings(spoiler.getSettings());
+            seed.setGeneratedOn(Instant.now());
+
+            logger.info("Seed generation finished successfully!");
+            publisher.publishEvent(new GeneratorSuccessEvent(this, seed));
         } catch (Exception e) {
             logger.error("Failed to generate seed: {}", e.getMessage());
             publisher.publishEvent(new GeneratorErrorEvent(this, seed, e));

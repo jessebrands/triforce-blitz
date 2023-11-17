@@ -55,12 +55,10 @@ public class SeedEventListener {
 
     @EventListener
     public void onGeneratorSuccess(GeneratorSuccessEvent event) {
-        var seed = event.getSeed();
-        var timestamp = event.getTimestamp();
-        seed.setGeneratedOn(Instant.ofEpochMilli(timestamp));
-        seed = repository.save(seed);
+        var seed = repository.save(event.getSeed());
 
         // Send out the success message.
+        var timestamp = event.getTimestamp();
         var destination = getDestinationPrefix(seed) + "/generator/success";
         template.convertAndSend(destination, new GeneratorSuccessMessage(timestamp));
     }

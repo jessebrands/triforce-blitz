@@ -27,11 +27,21 @@
     });
 
     client.onConnect = () => {
-      client.subscribe("/topic/seeds/" + seedId + "/log", frame => {
+      client.subscribe("/topic/seeds/" + seedId + "/generator/log", frame => {
         const data = JSON.parse(frame.body);
         const timestamp = new Date(data.timestamp);
         const message = data.message;
         pushLogMessage("["+ timestamp.toLocaleTimeString() + "] " + message)
+      });
+      client.subscribe("/topic/seeds/" + seedId + "/generator/start", () => {
+        const el = document.getElementById("progress-message");
+        el.innerText = "Seed generation has started, just a little longer now!";
+      });
+      client.subscribe("/topic/seeds/" + seedId + "/generator/success", frame => {
+        const data = JSON.parse(frame.body);
+        const timestamp = new Date(data.timestamp);
+        pushLogMessage("[" + timestamp.toLocaleTimeString() + "] Seed generation finished successfully, refreshing...");
+        location.reload();
       });
       console.log("Connected to Triforce Blitz service.");
     }
@@ -44,11 +54,46 @@
 
 <main layout:fragment="content">
   <div th:if="${seed.generatedOn}">
-    The seed has finished generating, this a place holder...
+    <div th:text="${seed.hash}"></div>
+
+    <table>
+      <tr>
+        <th>ID</th>
+        <td th:text="${seed.id}">Some UUID here</td>
+      </tr>
+      <tr>
+        <th>Release version</th>
+        <td th:text="${seed.version}">v1.0.0-blitz-1.0</td>
+      </tr>
+      <tr>
+        <th>Randomizer version</th>
+        <td th:text="${seed.generatorVersion}">v1.0.0-blitz-1.0</td>
+      </tr>
+      <tr>
+        <th>Season</th>
+        <td th:text="${seed.season.name}">Season 1</td>
+      </tr>
+      <tr>
+        <th>Seed</th>
+        <td th:text="${seed.seed}">Seed String</td>
+      </tr>
+      <tr>
+        <th>Settings</th>
+        <td th:text="${seed.settings}">SETTINGSTRING</td>
+      </tr>
+      <tr>
+        <th>Requested on</th>
+        <td th:text="${#temporals.format(seed.requestedOn)}">Season 1</td>
+      </tr>
+      <tr>
+        <th>Generated on</th>
+        <td th:text="${#temporals.format(seed.generatedOn)}">Season 1</td>
+      </tr>
+    </table>
   </div>
   <div th:unless="${seed.generatedOn}" class="info-dialog">
     <h1>Please wait, your seed is being generated...</h1>
-    <p>We got your request successfully, just sit back and wait... this will only take a moment!</p>
+    <p id="progress-message">We got your request successfully, waiting for the generator...</p>
     <div id="seed-log" class="generator-log"></div>
   </div>
 </main>

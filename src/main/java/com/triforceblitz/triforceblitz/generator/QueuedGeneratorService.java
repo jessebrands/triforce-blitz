@@ -78,6 +78,7 @@ public class QueuedGeneratorService implements GeneratorService {
         var interpreter = pythonService.findInterpreter().orElseThrow();
         var outputPath = config.getSeedsPath().resolve(seed.getId().toString());
         var settings = new GeneratorSettings(config.getRom(), outputPath, generatorSeed);
+        settings.setOutputName(seed.getId().toString());
 
         logger.info("Handing off seed generation task to the executor.");
         executor.execute(new GeneratorTask(interpreter, generator, seed, season.getPreset(), settings, eventPublisher));
