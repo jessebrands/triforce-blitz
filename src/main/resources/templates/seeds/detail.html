@@ -56,6 +56,8 @@
   <div th:if="${seed.generatedOn}">
     <div th:text="${seed.hash}"></div>
 
+    <div><a th:href="@{/seeds/{uuid}/patch(uuid=${seed.id})}">Download Patch</a></div>
+
     <table>
       <tr>
         <th>ID</th>
