@@ -25,4 +25,15 @@ public class LocalSeedService implements SeedService {
         }
         return Optional.empty();
     }
+
+    @Override
+    public Optional<Path> getSpoilerFilename(Seed seed) {
+        var seedId = seed.getId().toString();
+        var seedPath = config.getSeedsPath().resolve(seedId);
+        var spoilerFilename = seedPath.resolve(seedId + "_Spoiler.json");
+        if (Files.exists(spoilerFilename) && Files.isRegularFile(spoilerFilename)) {
+            return Optional.of(spoilerFilename);
+        }
+        return Optional.empty();
+    }
 }

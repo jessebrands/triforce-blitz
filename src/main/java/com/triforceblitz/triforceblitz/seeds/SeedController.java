@@ -5,6 +5,8 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.NonNullApi;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,18 +38,33 @@ public class SeedController {
     @GetMapping("/{id}/patch" )
     public ResponseEntity<?> getSeedPatchFile(@PathVariable UUID id) throws Exception {
         var seed = seedRepository.findSeedById(id).orElseThrow();
-        var patchFilename = seedService.getPatchFilename(seed).orElseThrow();
-        var resource = new ByteArrayResource(Files.readAllBytes(patchFilename));
-        var contentDisposition = getPatchContentDisposition(seed);
+        var patchFile = seedService.getPatchFilename(seed).orElseThrow();
+        var resource = new ByteArrayResource(Files.readAllBytes(patchFile));
+        var patchFilename = patchFile.getFileName().toString();
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                .header(HttpHeaders.CONTENT_DISPOSITION, getContentDisposition(patchFilename))
                 .body(resource);
     }
 
-    @NotNull
-    private static String getPatchContentDisposition(Seed seed) {
-        return String.format("attachment; filename=\"TriforceBlitz_%s.zpf\"", seed.getId());
+    @GetMapping("/{id}/spoiler")
+    public ResponseEntity<?> getSeedSpoilerFile(@PathVariable UUID id) throws Exception {
+        var seed  = seedRepository.findSeedById(id).orElseThrow();
+        if (!seed.isSpoilerUnlocked()) {
+            throw new RuntimeException("Spoiler log is locked.");
+        }
+        var spoilerFile = seedService.getSpoilerFilename(seed).orElseThrow();
+        var resource = new ByteArrayResource(Files.readAllBytes(spoilerFile));
+        var spoilerFilename = spoilerFile.getFileName().toString();
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.CONTENT_DISPOSITION, getContentDisposition(spoilerFilename))
+                .body(resource);
+    }
+
+    private static String getContentDisposition(String filename) {
+        return String.format("attachment; filename=\"%s\"", filename);
     }
 }

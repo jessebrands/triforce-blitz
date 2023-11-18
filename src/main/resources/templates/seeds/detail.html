@@ -57,6 +57,9 @@
     <div th:text="${seed.hash}"></div>
 
     <div><a th:href="@{/seeds/{uuid}/patch(uuid=${seed.id})}">Download Patch</a></div>
+    <div th:if="${seed.spoilerUnlocked}">
+      <a th:href="@{/seeds/{uuid}/spoiler(uuid=${seed.id})}">Download Spoiler</a>
+    </div>
 
     <table>
       <tr>

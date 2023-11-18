@@ -42,6 +42,8 @@ public class Seed {
     @Nullable
     private String settings;
 
+    private boolean spoilerUnlocked = true;
+
     Seed(UUID id, Version version, Season season, String seed, Instant requestedOn) {
         this.id = id;
         this.version = version;
@@ -114,5 +116,13 @@ public class Seed {
 
     public void setSettings(@Nullable String settings) {
         this.settings = settings;
+    }
+
+    public boolean isSpoilerUnlocked() {
+        return spoilerUnlocked;
+    }
+
+    public void setSpoilerUnlocked(boolean spoilerUnlocked) {
+        this.spoilerUnlocked = spoilerUnlocked;
     }
 }
