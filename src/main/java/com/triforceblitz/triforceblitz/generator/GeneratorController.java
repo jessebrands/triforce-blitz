@@ -2,6 +2,7 @@ package com.triforceblitz.triforceblitz.generator;
 
 import com.triforceblitz.triforceblitz.Version;
 import com.triforceblitz.triforceblitz.generator.forms.GeneratorForm;
+import com.triforceblitz.triforceblitz.seeds.SeedRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +14,11 @@ import java.util.UUID;
 @RequestMapping("/generator")
 public class GeneratorController {
     private final GeneratorService generatorService;
+    private final SeedRepository seedRepository;
 
-    public GeneratorController(GeneratorService generatorService) {
+    public GeneratorController(GeneratorService generatorService, SeedRepository seedRepository) {
         this.generatorService = generatorService;
+        this.seedRepository = seedRepository;
     }
 
     @GetMapping
@@ -41,6 +44,11 @@ public class GeneratorController {
     public String generateSeed(@ModelAttribute("form") GeneratorForm form) throws Exception {
         var generatorSeed = UUID.randomUUID().toString();
         var seed = generatorService.generateSeed(form.getVersion(), form.getSeason(), generatorSeed);
+        switch (form.getUnlockMode()) {
+            case UNLOCKED -> seed.setSpoilerUnlocked(true);
+            case LOCKED -> seed.setSpoilerUnlocked(false);
+        }
+        seedRepository.save(seed);
         return "redirect:/seeds/" + seed.getId();
     }
 
