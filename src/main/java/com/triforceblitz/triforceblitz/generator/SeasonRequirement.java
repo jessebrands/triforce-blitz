@@ -5,10 +5,12 @@ import com.triforceblitz.triforceblitz.seeds.Season;
 import org.springframework.lang.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class SeasonRequirements {
+public class SeasonRequirement {
+    private final long id;
     private final Season season;
 
     @Nullable
@@ -19,38 +21,16 @@ public class SeasonRequirements {
 
     private final List<String> branches = new ArrayList<>();
 
-    public SeasonRequirements(Season season,
-                              @Nullable Version minimumVersion) {
-        this(season, null, minimumVersion, null);
-    }
-
-    public SeasonRequirements(Season season,
-                              @Nullable Version minimumVersion,
-                              @Nullable Version maximumVersion) {
-        this(season, null, minimumVersion, maximumVersion);
-    }
-
-    public SeasonRequirements(Season season,
-                              @Nullable List<String> branches) {
-        this(season, branches, null, null);
-    }
-
-    public SeasonRequirements(Season season,
-                              @Nullable List<String> branches,
-                              @Nullable Version minimumVersion) {
-        this(season, branches, minimumVersion, null);
-    }
-
-    public SeasonRequirements(Season season,
-                              @Nullable List<String> branches,
-                              @Nullable Version minimumVersion,
-                              @Nullable Version maximumVersion) {
-        this.season = Objects.requireNonNull(season);
-        if (branches != null) {
-            this.branches.addAll(branches);
-        }
+    // All args constructor for JDBC
+    public SeasonRequirement(long id, Season season,
+                             @Nullable Version minimumVersion,
+                             @Nullable Version maximumVersion,
+                             String[] branches) {
+        this.id = id;
+        this.season = season;
         this.minimumVersion = minimumVersion;
         this.maximumVersion = maximumVersion;
+        this.branches.addAll( Arrays.stream(branches).toList());
     }
 
     public boolean satisfiesRequirements(Version version) {

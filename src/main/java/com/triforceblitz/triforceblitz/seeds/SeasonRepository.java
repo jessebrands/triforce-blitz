@@ -4,6 +4,5 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface SeasonRepository {
-    Optional<Season> findByUuid(UUID uuid);
-    Season save(Season season);
+    Optional<Season> findById(long id);
 }

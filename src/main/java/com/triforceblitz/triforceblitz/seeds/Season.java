@@ -2,12 +2,13 @@ package com.triforceblitz.triforceblitz.seeds;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class Season implements Comparable<Season> {
-    private final UUID uuid = UUID.randomUUID();
+    private final long id;
+
     private final int ordinal;
-    private final String name;
     private String preset;
     private String messageKey;
 
@@ -16,26 +17,32 @@ public class Season implements Comparable<Season> {
         return Integer.compare(ordinal, o.ordinal);
     }
 
-    public Season(int ordinal, String name, String preset) {
+    public Season(long id, int ordinal, String preset, String messageKey) {
+        this.id = id;
         this.ordinal = ordinal;
-        this.name = name;
         this.preset = preset;
+        this.messageKey = messageKey;
     }
 
-    public UUID getUuid() {
-        return uuid;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Season season = (Season) o;
+        return id == season.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    public long getId() {
+        return id;
     }
 
     public int getOrdinal() {
         return ordinal;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getMessageKey() {
-        return messageKey;
     }
 
     public void setMessageKey(String messageKey) {
@@ -48,5 +55,9 @@ public class Season implements Comparable<Season> {
 
     public void setPreset(String preset) {
         this.preset = preset;
+    }
+
+    public String getMessageKey() {
+        return messageKey;
     }
 }

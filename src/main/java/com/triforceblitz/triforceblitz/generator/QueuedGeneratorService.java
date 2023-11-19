@@ -29,32 +29,18 @@ public class QueuedGeneratorService implements GeneratorService {
     private final GeneratorConfig config;
     private final PythonService pythonService;
     private final SeedRepository seedRepository;
-
-    private final List<SeasonRequirements> seasonRequirements = new ArrayList<>();
+    private final SeasonRequirementRepository requirementRepository;
 
     public QueuedGeneratorService(ApplicationEventPublisher eventPublisher,
                                   GeneratorConfig config,
                                   PythonService pythonService,
                                   SeasonRepository seasonRepository,
-                                  SeedRepository seedRepository) {
+                                  SeedRepository seedRepository, SeasonRequirementRepository requirementRepository) {
         this.eventPublisher = eventPublisher;
         this.config = config;
         this.pythonService = pythonService;
         this.seedRepository = seedRepository;
-
-        // Create some fake requirements for now!
-        seasonRequirements.addAll(List.of(
-                new SeasonRequirements(
-                        seasonRepository.save(new Season(1, "1", "Triforce Blitz")),
-                        List.of("blitz"),                     // Valid branches
-                        Version.from("v6.2.0-blitz-0.1")      // Minimum version
-                ),
-                new SeasonRequirements(
-                        seasonRepository.save(new Season(2, "2", "Triforce Blitz S2")),
-                        List.of("blitz"),                        // Valid branches
-                        Version.from("v7.1.3-blitz-0.40")        // Minimum version
-                )
-        ));
+        this.requirementRepository = requirementRepository;
     }
 
     @Override
@@ -104,9 +90,9 @@ public class QueuedGeneratorService implements GeneratorService {
 
     @Override
     public List<Season> getCompatibleSeasons(Version version) {
-        return seasonRequirements.stream()
+        return requirementRepository.findAll().stream()
                 .filter(req -> req.satisfiesRequirements(version))
-                .map(SeasonRequirements::getSeason)
+                .map(SeasonRequirement::getSeason)
                 .collect(Collectors.toList());
     }
 

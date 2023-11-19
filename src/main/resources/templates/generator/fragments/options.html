@@ -1,8 +1,8 @@
 <div th:fragment="options(seasons, activeSeason)" id="generator-options">
     <label th:if="${seasons}" th:each="s : ${seasons}">
-        <input type="radio" name="season" th:value="${s.uuid}"
-               th:checked="${s.uuid} == ${activeSeason.uuid}">
-        <span th:text="${'Season ' + s.name}">Season 0</span>
+        <input type="radio" name="season" th:value="${s.id}"
+               th:checked="${s.id} == ${activeSeason.id}">
+        <span th:text="#{__${s.messageKey}__}">Season 0</span>
     </label>
     <div th:unless="${seasons}">No seasons available for this version.</div>
 </div>
