@@ -2,16 +2,17 @@ package com.triforceblitz.triforceblitz.generator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
 import java.nio.file.Path;
-import java.util.UUID;
 
+@Data
 public class GeneratorSettings {
     @JsonProperty("seed")
-    private String seed = UUID.randomUUID().toString();
+    private String seed;
 
     @JsonProperty("output_file")
-    private String outputName = seed;
+    private String outputName;
 
     @JsonProperty("rom")
     private String romFilename;
@@ -41,106 +42,11 @@ public class GeneratorSettings {
     @JsonProperty("compress_rom")
     private String compressionType = "Patch";
 
-    public GeneratorSettings(Path romFilename, Path outputPath) {
-        this.romFilename = romFilename.toAbsolutePath().toString();
-        this.outputPath = outputPath.toAbsolutePath().toString();
-    }
-
     public GeneratorSettings(Path romFilename, Path outputPath, String seed) {
         this.seed = seed;
         this.outputName = seed;
         this.romFilename = romFilename.toAbsolutePath().toString();
         this.outputPath = outputPath.toAbsolutePath().toString();
-    }
-
-    public String getSeed() {
-        return seed;
-    }
-
-    public void setSeed(String seed) {
-        this.seed = seed;
-    }
-
-    public String getOutputName() {
-        return outputName;
-    }
-
-    public void setOutputName(String outputName) {
-        this.outputName = outputName;
-    }
-
-    public String getRomFilename() {
-        return romFilename;
-    }
-
-    public void setRomFilename(String romFilename) {
-        this.romFilename = romFilename;
-    }
-
-    public String getOutputPath() {
-        return outputPath;
-    }
-
-    public void setOutputPath(String outputPath) {
-        this.outputPath = outputPath;
-    }
-
-    public boolean isCreateSpoilerLog() {
-        return createSpoilerLog;
-    }
-
-    public void setCreateSpoilerLog(boolean createSpoilerLog) {
-        this.createSpoilerLog = createSpoilerLog;
-    }
-
-    public boolean isCreatePatchFile() {
-        return createPatchFile;
-    }
-
-    public void setCreatePatchFile(boolean createPatchFile) {
-        this.createPatchFile = createPatchFile;
-    }
-
-    public boolean isCreateCosmeticsLog() {
-        return createCosmeticsLog;
-    }
-
-    public void setCreateCosmeticsLog(boolean createCosmeticsLog) {
-        this.createCosmeticsLog = createCosmeticsLog;
-    }
-
-    public boolean isCreateCompressedRom() {
-        return createCompressedRom;
-    }
-
-    public void setCreateCompressedRom(boolean createCompressedRom) {
-        this.createCompressedRom = createCompressedRom;
-    }
-
-    public boolean isShowSeedInfo() {
-        return showSeedInfo;
-    }
-
-    public void setShowSeedInfo(boolean showSeedInfo) {
-        this.showSeedInfo = showSeedInfo;
-    }
-
-    public String getUserMessage() {
-        return userMessage;
-    }
-
-    public void setUserMessage(String userMessage) {
-        this.userMessage = userMessage;
-    }
-
-    @JsonIgnore
-    public String getPatchFilename() {
-        return outputName + ".zpf";
-    }
-
-    @JsonIgnore
-    public Path getPatchFilePath() {
-        return Path.of(outputPath).resolve(getPatchFilename());
     }
 
     @JsonIgnore

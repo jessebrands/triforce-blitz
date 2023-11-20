@@ -39,7 +39,7 @@ public class LocalPythonService implements PythonService {
     @Cacheable(value = "interpreters", key = "#names")
     public Optional<PythonInterpreter> findInterpreter(String... names) {
         var searchPaths = new ArrayList<>(config.getPaths());
-        if (config.getIncludeSystemPath()) {
+        if (config.isIncludePath()) {
             searchPaths.addAll(getSystemPath());
         }
 

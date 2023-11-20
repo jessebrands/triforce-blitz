@@ -1,19 +1,17 @@
 package com.triforceblitz.triforceblitz.generator;
 
 import com.triforceblitz.triforceblitz.python.PythonInterpreter;
+import lombok.Getter;
 
 import java.nio.file.Path;
 import java.util.Objects;
 
+@Getter
 public class LocalGenerator implements Generator {
     private final Path path;
 
     public LocalGenerator(Path path) {
         this.path = Objects.requireNonNull(path);
-    }
-
-    public Path getPath() {
-        return path;
     }
 
     private Path getEntrypointPath() {

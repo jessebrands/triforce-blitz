@@ -25,10 +25,6 @@ public record Version(int major, int minor, int patch, String branch, int branch
         );
     }
 
-    public static boolean isValid(String s) {
-        return VALID_PATTERN.matcher(s).matches();
-    }
-
     public int compareToRandomizerVersion(Version o) {
         if (major != o.major) return Integer.compare(major, o.major);
         if (minor != o.minor) return Integer.compare(minor, o.minor);

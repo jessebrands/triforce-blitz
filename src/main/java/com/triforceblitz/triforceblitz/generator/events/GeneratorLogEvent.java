@@ -1,8 +1,10 @@
 package com.triforceblitz.triforceblitz.generator.events;
 
 import com.triforceblitz.triforceblitz.seeds.Seed;
+import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
+@Getter
 public class GeneratorLogEvent extends ApplicationEvent {
     private final Seed seed;
     private final String message;
@@ -11,13 +13,5 @@ public class GeneratorLogEvent extends ApplicationEvent {
         super(source);
         this.seed = seed;
         this.message = message;
-    }
-
-    public Seed getSeed() {
-        return seed;
-    }
-
-    public String getMessage() {
-        return message;
     }
 }

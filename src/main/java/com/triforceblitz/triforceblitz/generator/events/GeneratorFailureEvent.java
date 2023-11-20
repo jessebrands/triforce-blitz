@@ -1,6 +1,7 @@
 package com.triforceblitz.triforceblitz.generator.events;
 
 import com.triforceblitz.triforceblitz.seeds.Seed;
+import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -8,15 +9,12 @@ import org.springframework.context.ApplicationEvent;
  *
  * @author Jesse
  */
+@Getter
 public class GeneratorFailureEvent extends ApplicationEvent {
     private final Seed seed;
 
     public GeneratorFailureEvent(Object source, Seed seed) {
         super(source);
         this.seed = seed;
-    }
-
-    public Seed getSeed() {
-        return seed;
     }
 }

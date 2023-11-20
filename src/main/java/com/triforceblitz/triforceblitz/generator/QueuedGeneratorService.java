@@ -58,7 +58,7 @@ public class QueuedGeneratorService implements GeneratorService {
     }
 
     @Override
-    public Optional<Generator> findGenerator(Version version) {
+    public Optional<Generator> getGenerator(Version version) {
         var installPath = config.getGeneratorsPath().resolve(version.toString());
         var entryFile = installPath.resolve("OoTRandomizer.py");
         if (Files.exists(entryFile) && !Files.isDirectory(entryFile)) {
@@ -74,7 +74,7 @@ public class QueuedGeneratorService implements GeneratorService {
         }
 
         var seed = Seed.create(version, season, generatorSeed);
-        var generator = findGenerator(version).orElseThrow();
+        var generator = getGenerator(version).orElseThrow();
         var interpreter = pythonService.findInterpreter().orElseThrow();
         var outputPath = config.getSeedsPath().resolve(seed.getId().toString());
         var settings = new GeneratorSettings(config.getRom(), outputPath, generatorSeed);
