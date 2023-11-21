@@ -1,107 +1,14 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout.html}">
 <head>
-  <title>Triforce Blitz Seed</title>
-
-  <script th:src="@{/webjars/stomp__stompjs/bundles/stomp.umd.min.js}"></script>
-
-  <script type="module" defer>
-    const seedId = "[[${seed.id}]]";
-    const logElement = document.getElementById("seed-log");
-
-    function pushLogMessage(msg) {
-      const el = document.createElement("div");
-      el.className = "log-message"
-      el.innerText = msg;
-      logElement.appendChild(el);
-      logElement.scrollTop = logElement.scrollHeight;
-    }
-
-    // Create our STOMP client.
-    const client = new StompJs.Client({
-      brokerURL: "ws://" + window.location.host + "/ws",
-      reconnectDelay: 5000,
-    });
-
-    client.onConnect = () => {
-      client.subscribe("/topic/seeds/" + seedId + "/generator/log", frame => {
-        const data = JSON.parse(frame.body);
-        const timestamp = new Date(data.timestamp);
-        const message = data.message;
-        pushLogMessage("["+ timestamp.toLocaleTimeString() + "] " + message)
-      });
-      client.subscribe("/topic/seeds/" + seedId + "/generator/start", () => {
-        const el = document.getElementById("progress-message");
-        el.innerText = "Seed generation has started, just a little longer now!";
-      });
-      client.subscribe("/topic/seeds/" + seedId + "/generator/success", frame => {
-        const data = JSON.parse(frame.body);
-        const timestamp = new Date(data.timestamp);
-        pushLogMessage("[" + timestamp.toLocaleTimeString() + "] Seed generation finished successfully, refreshing...");
-        location.reload();
-      });
-      console.log("Connected to Triforce Blitz service.");
-    }
-
-    client.activate();
-  </script>
+    <title th:text="#{seeds.detail.title}">Triforce Blitz Seed</title>
 </head>
-
 <body>
-
 <main layout:fragment="content">
-  <div th:if="${seed.generatedOn}">
-    <div th:text="${seed.hash}"></div>
-
-    <div><a th:href="@{/seeds/{uuid}/patch(uuid=${seed.id})}">Download Patch</a></div>
-    <div th:if="${seed.spoilerUnlocked}">
-      <a th:href="@{/seeds/{uuid}/spoiler(uuid=${seed.id})}">Download Spoiler</a>
-    </div>
-
-    <table>
-      <tr>
-        <th>ID</th>
-        <td th:text="${seed.id}">Some UUID here</td>
-      </tr>
-      <tr>
-        <th>Release version</th>
-        <td th:text="${seed.version}">v1.0.0-blitz-1.0</td>
-      </tr>
-      <tr>
-        <th>Randomizer version</th>
-        <td th:text="${seed.generatorVersion}">v1.0.0-blitz-1.0</td>
-      </tr>
-      <tr>
-        <th>Season</th>
-        <td th:text="#{__${seed.season.messageKey}__}">Season 1</td>
-      </tr>
-      <tr>
-        <th>Seed</th>
-        <td th:text="${seed.seed}">Seed String</td>
-      </tr>
-      <tr>
-        <th>Settings</th>
-        <td th:text="${seed.settings}">SETTINGSTRING</td>
-      </tr>
-      <tr>
-        <th>Requested on</th>
-        <td th:text="${#temporals.format(seed.requestedOn)}">Season 1</td>
-      </tr>
-      <tr>
-        <th>Generated on</th>
-        <td th:text="${#temporals.format(seed.generatedOn)}">Season 1</td>
-      </tr>
-    </table>
-  </div>
-  <div th:unless="${seed.generatedOn}" class="info-dialog">
-    <h1>Please wait, your seed is being generated...</h1>
-    <p id="progress-message">We got your request successfully, waiting for the generator...</p>
-    <div id="seed-log" class="generator-log"></div>
-  </div>
+    Seed detail content will go here...
 </main>
-
 </body>
 </html>

@@ -1,21 +1,23 @@
 package com.triforceblitz.triforceblitz;
 
+import org.springframework.lang.NonNull;
+
 import java.util.regex.Pattern;
 
-public record Version(int major, int minor, int patch, String branch, int branchMajor, int branchMinor)
-        implements Comparable<Version> {
+public record TriforceBlitzVersion(int major, int minor, int patch, String branch, int branchMajor, int branchMinor)
+        implements Comparable<TriforceBlitzVersion> {
     private static final Pattern VALID_PATTERN = Pattern.compile(
             "^v?(\\d+)\\.(\\d+)\\.(\\d+)-([a-z0-9]+)-(\\d+).(\\d+)$"
     );
 
-    public static Version from(String s) {
+    public static TriforceBlitzVersion fromString(String s) {
         var matcher = VALID_PATTERN.matcher(s);
         if (!matcher.matches()) {
             throw new RuntimeException("invalid Triforce Blitz version");
         }
 
         // First group (0) is the whole match, so we skip that one. We know this is valid so move confidently.
-        return new Version(
+        return new TriforceBlitzVersion(
                 Integer.parseInt(matcher.group(1)),
                 Integer.parseInt(matcher.group(2)),
                 Integer.parseInt(matcher.group(3)),
@@ -25,19 +27,19 @@ public record Version(int major, int minor, int patch, String branch, int branch
         );
     }
 
-    public int compareToRandomizerVersion(Version o) {
+    public int compareToRandomizerVersion(TriforceBlitzVersion o) {
         if (major != o.major) return Integer.compare(major, o.major);
         if (minor != o.minor) return Integer.compare(minor, o.minor);
         return Integer.compare(patch, o.patch);
     }
 
-    public int compareToBranchVersion(Version o) {
+    public int compareToBranchVersion(TriforceBlitzVersion o) {
         if (branchMajor != o.branchMajor) return Integer.compare(branchMajor, o.branchMajor);
         return Integer.compare(branchMinor, o.branchMinor);
     }
 
     @Override
-    public int compareTo(Version o) {
+    public int compareTo(@NonNull TriforceBlitzVersion o) {
         var r = compareToBranchVersion(o);
         if (r != 0) {
             return r;

@@ -4,6 +4,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface SeedRepository {
-    Optional<Seed> findSeedById(UUID id);
-    Seed save(Seed seed);
+    Optional<Seed> findById(UUID id);
+
+    Seed insert(Seed seed);
+
+    Seed update(Seed seed);
 }

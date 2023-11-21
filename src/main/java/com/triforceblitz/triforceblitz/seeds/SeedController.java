@@ -1,70 +1,57 @@
 package com.triforceblitz.triforceblitz.seeds;
 
-import org.jetbrains.annotations.NotNull;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.NonNullApi;
+import com.triforceblitz.triforceblitz.generator.GeneratorService;
+import com.triforceblitz.triforceblitz.seeds.forms.GenerateSeedForm;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.Files;
 import java.util.UUID;
 
+/**
+ * Web controller for the <code>/seeds</code> endpoint. This controller is the main entrypoint related for anything
+ * related to seeds such as viewing them, downloading patch files, and of course generating them.
+ *
+ * @author Jesse
+ */
 @Controller
-@RequestMapping("/seeds")
+@RequestMapping(value = "/seeds", name = "seeds")
 public class SeedController {
-    private final SeedRepository seedRepository;
     private final SeedService seedService;
+    private final GeneratorService generatorService;
 
-    public SeedController(SeedRepository seedRepository, SeedService seedService) {
-        this.seedRepository = seedRepository;
+    public SeedController(SeedService seedService, GeneratorService generatorService) {
         this.seedService = seedService;
+        this.generatorService = generatorService;
+    }
+
+    @GetMapping("/generate")
+    public String getGeneratorForm(@ModelAttribute("form") GenerateSeedForm form,
+                                   Model model) {
+        model.addAttribute("versions", generatorService.getAvailableVersions());
+        return "seeds/generator_form";
+    }
+
+    @PostMapping("/generate")
+    public String postGeneratorForm(@ModelAttribute("form") GenerateSeedForm form,
+                                    BindingResult result) throws Exception {
+        if (result.hasErrors()) {
+            return "seeds/generator_form";
+        }
+
+        var seed = seedService.generateSeed(form.getVersion());
+        switch (form.getUnlockMode()) {
+            case ALWAYS_UNLOCKED -> seedService.unlockSpoilerLog(seed);
+            case ALWAYS_LOCKED -> seedService.lockSpoilerLog(seed);
+        }
+
+        return "redirect:/seeds/" + seed.getId();
     }
 
     @GetMapping("/{id}")
-    public String getSeedDetail(@PathVariable UUID id, Model model) {
-        var seed = seedRepository.findSeedById(id).orElseThrow();
-
-        model.addAttribute("seed", seed);
+    public String getSeed(@PathVariable UUID id, Model model) {
+        model.addAttribute("seed", seedService.getSeed(id));
         return "seeds/detail";
-    }
-
-    @GetMapping("/{id}/patch" )
-    public ResponseEntity<?> getSeedPatchFile(@PathVariable UUID id) throws Exception {
-        var seed = seedRepository.findSeedById(id).orElseThrow();
-        var patchFile = seedService.getPatchFilename(seed).orElseThrow();
-        var resource = new ByteArrayResource(Files.readAllBytes(patchFile));
-        var patchFilename = patchFile.getFileName().toString();
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header(HttpHeaders.CONTENT_DISPOSITION, getContentDisposition(patchFilename))
-                .body(resource);
-    }
-
-    @GetMapping("/{id}/spoiler")
-    public ResponseEntity<?> getSeedSpoilerFile(@PathVariable UUID id) throws Exception {
-        var seed  = seedRepository.findSeedById(id).orElseThrow();
-        if (!seed.isSpoilerUnlocked()) {
-            throw new RuntimeException("Spoiler log is locked.");
-        }
-        var spoilerFile = seedService.getSpoilerFilename(seed).orElseThrow();
-        var resource = new ByteArrayResource(Files.readAllBytes(spoilerFile));
-        var spoilerFilename = spoilerFile.getFileName().toString();
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.CONTENT_DISPOSITION, getContentDisposition(spoilerFilename))
-                .body(resource);
-    }
-
-    private static String getContentDisposition(String filename) {
-        return String.format("attachment; filename=\"%s\"", filename);
     }
 }

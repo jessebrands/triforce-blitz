@@ -1,9 +1,15 @@
 package com.triforceblitz.triforceblitz.seeds;
 
-import java.nio.file.Path;
-import java.util.Optional;
+import com.triforceblitz.triforceblitz.TriforceBlitzVersion;
+
+import java.util.UUID;
 
 public interface SeedService {
-    Optional<Path> getPatchFilename(Seed seed);
-    Optional<Path> getSpoilerFilename(Seed seed);
+    Seed getSeed(UUID id);
+
+    Seed generateSeed(TriforceBlitzVersion version) throws Exception;
+
+    void lockSpoilerLog(Seed seed);
+
+    void unlockSpoilerLog(Seed seed);
 }

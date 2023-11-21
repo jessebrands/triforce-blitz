@@ -1,128 +1,50 @@
 package com.triforceblitz.triforceblitz.seeds;
 
-import com.triforceblitz.triforceblitz.Version;
-import org.springframework.lang.Nullable;
+import com.triforceblitz.triforceblitz.TriforceBlitzVersion;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
+@Getter
+@Setter
+@AllArgsConstructor
 public class Seed {
     private final UUID id;
-    private final Version version;
-    private final Season season;
+    private final TriforceBlitzVersion version;
     private final String seed;
-    private final Instant requestedOn;
+    private final Instant createdOn;
 
-    /**
-     * The timestamp at which this seed finished generation.
-     */
-    @Nullable
-    private Instant generatedOn;
+    private boolean spoilerLocked;
 
-    /**
-     * The version of the Ocarina of Time randomizer that was used to generate the seed. This is not the same thing as
-     * the release version of Triforce Blitz which can be found in the {@link Seed#version} property.
-     */
-    @Nullable
-    private String generatorVersion;
-
-    /**
-     * The unique hash for this seed. The seed hash is represented by the name of one of Ocarina of Time's many items,
-     * there are five items in the hash total.
-     */
-    @Nullable
-    private List<String> hash = new ArrayList<>();
-
-    /**
-     * The settings string used to generate the seed. This string is an alphanumeric representation of the settings
-     * selected by the preset, and has nothing to do with the settings in Settings.json.
-     */
-    @Nullable
-    private String settings;
-
-    private boolean spoilerUnlocked = true;
-
-    Seed(UUID id, Version version, Season season, String seed, Instant requestedOn) {
-        this.id = id;
-        this.version = version;
-        this.season = season;
-        this.seed = seed;
-        this.requestedOn = requestedOn;
-    }
-
-    public static Seed create(Version version, Season season, String seed) {
+    public static Seed create(TriforceBlitzVersion version, String seed) {
         return new Seed(
                 UUID.randomUUID(),
                 version,
-                season,
                 seed,
-                Instant.now()
+                Instant.now(),
+                true
         );
     }
 
-    public UUID getId() {
-        return id;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Seed seed = (Seed) o;
+        return Objects.equals(id, seed.id);
     }
 
-    public Version getVersion() {
-        return version;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
-    public Season getSeason() {
-        return season;
-    }
-
-    public String getSeed() {
-        return seed;
-    }
-
-    public Instant getRequestedOn() {
-        return requestedOn;
-    }
-
-    @Nullable
-    public Instant getGeneratedOn() {
-        return generatedOn;
-    }
-
-    public void setGeneratedOn(@Nullable Instant generatedOn) {
-        this.generatedOn = generatedOn;
-    }
-
-    @Nullable
-    public String getGeneratorVersion() {
-        return generatorVersion;
-    }
-
-    public void setGeneratorVersion(@Nullable String generatorVersion) {
-        this.generatorVersion = generatorVersion;
-    }
-
-    @Nullable
-    public List<String> getHash() {
-        return hash;
-    }
-
-    public void setHash(@Nullable List<String> hash) {
-        this.hash = hash;
-    }
-
-    @Nullable
-    public String getSettings() {
-        return settings;
-    }
-
-    public void setSettings(@Nullable String settings) {
-        this.settings = settings;
-    }
-
-    public boolean isSpoilerUnlocked() {
-        return spoilerUnlocked;
-    }
-
-    public void setSpoilerUnlocked(boolean spoilerUnlocked) {
-        this.spoilerUnlocked = spoilerUnlocked;
+    @Override
+    public String toString() {
+        return "Seed{" + seed + "}";
     }
 }
