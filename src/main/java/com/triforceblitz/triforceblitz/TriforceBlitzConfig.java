@@ -13,6 +13,7 @@ public class TriforceBlitzConfig {
     private Path seedStoragePath;
     private Path romFile;
     private String randomizerVersion;
+    private String randomizerPreset;
 
     public String getPythonInterpreter() {
         return pythonInterpreter;
@@ -52,5 +53,13 @@ public class TriforceBlitzConfig {
 
     public void setRandomizerVersion(String randomizerVersion) {
         this.randomizerVersion = randomizerVersion;
+    }
+
+    public String getRandomizerPreset() {
+        return randomizerPreset;
+    }
+
+    public void setRandomizerPreset(String randomizerPreset) {
+        this.randomizerPreset = randomizerPreset;
     }
 }

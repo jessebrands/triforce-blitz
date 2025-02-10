@@ -49,7 +49,12 @@ public class LocalSeedService implements SeedService {
             throw new UncheckedIOException(e);
         }
         // 6. Invoke the randomizer
-        var processBuilder = randomizer.generate(interpreter, seed.getSeed(), "Triforce Blitz", settingsFilename);
+        var processBuilder = randomizer.generate(
+                interpreter,
+                seed.getSeed(),
+                config.getRandomizerPreset(),
+                settingsFilename
+        );
         try {
             var process = processBuilder.start();
             // 7. Report the output to the log
