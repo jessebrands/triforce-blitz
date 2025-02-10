@@ -9,7 +9,7 @@ import java.nio.file.Path;
 @ConfigurationProperties(prefix = "triforce-blitz")
 public class TriforceBlitzConfig {
     private String pythonInterpreter;
-    private Path generatorPath;
+    private Path randomizersPath;
     private Path seedStoragePath;
     private Path romFile;
 
@@ -21,12 +21,12 @@ public class TriforceBlitzConfig {
         this.pythonInterpreter = pythonInterpreter;
     }
 
-    public Path getGeneratorPath() {
-        return generatorPath;
+    public Path getRandomizersPath() {
+        return randomizersPath;
     }
 
-    public void setGeneratorPath(Path generatorPath) {
-        this.generatorPath = generatorPath;
+    public void setRandomizersPath(Path randomizersPath) {
+        this.randomizersPath = randomizersPath;
     }
 
     public Path getSeedStoragePath() {

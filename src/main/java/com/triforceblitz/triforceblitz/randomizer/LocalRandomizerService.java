@@ -13,7 +13,7 @@ public class LocalRandomizerService implements RandomizerService {
 
     @Override
     public Randomizer getRandomizer(String version) {
-        var path = config.getGeneratorPath().resolve(version);
+        var path = config.getRandomizersPath().resolve(version);
         return new Randomizer(path);
     }
 }
