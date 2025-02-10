@@ -2,6 +2,7 @@ package com.triforceblitz.triforceblitz.seeds;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.triforceblitz.triforceblitz.TriforceBlitzConfig;
+import com.triforceblitz.triforceblitz.randomizer.RandomizerService;
 import com.triforceblitz.triforceblitz.randomizer.RandomizerSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +21,11 @@ public class LocalSeedService implements SeedService {
     private static final Logger logger = LoggerFactory.getLogger(LocalSeedService.class);
 
     private final TriforceBlitzConfig config;
+    private final RandomizerService randomizerService;
 
-    public LocalSeedService(TriforceBlitzConfig config) {
+    public LocalSeedService(TriforceBlitzConfig config, RandomizerService randomizerService) {
         this.config = config;
+        this.randomizerService = randomizerService;
     }
 
     @Override
@@ -31,7 +34,7 @@ public class LocalSeedService implements SeedService {
         // 1. Find a Python interpreter
         var interpreter = config.getPythonInterpreter();
         // 2. Locate the Randomizer
-        var randomizer = config.getGeneratorPath().resolve("8.1.37-blitz-0.59/OoTRandomizer.py");
+        var randomizer = randomizerService.getRandomizer("8.1.37-blitz-0.59");
         // 3. Generate a seed string to pass to the randomizer
         var outputDirectory = config.getSeedStoragePath().resolve(seed.getId());
         var settingsFilename = outputDirectory.resolve(RandomizerSettings.FILENAME);
@@ -46,14 +49,7 @@ public class LocalSeedService implements SeedService {
             throw new UncheckedIOException(e);
         }
         // 6. Invoke the randomizer
-        var processBuilder = new ProcessBuilder(
-                interpreter,
-                randomizer.toAbsolutePath().toString(),
-                "--seed", seed.getSeed(),
-                "--settings", settingsFilename.toAbsolutePath().toString(),
-                "--settings_preset", "Triforce Blitz",
-                "--no_log"
-        );
+        var processBuilder = randomizer.generate(interpreter, seed.getSeed(), "Triforce Blitz", settingsFilename);
         try {
             var process = processBuilder.start();
             // 7. Report the output to the log
