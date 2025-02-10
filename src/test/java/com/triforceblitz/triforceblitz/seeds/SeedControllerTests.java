@@ -32,7 +32,7 @@ class SeedControllerTests {
 
     @Test
     void whenValidGeneratorFormPosted_thenRedirectToSeed() throws Exception {
-        var expected = new Seed(UUID.randomUUID().toString());
+        var expected = new Seed(UUID.randomUUID().toString(), UUID.randomUUID().toString());
         when(seedService.generateSeed()).thenReturn(expected);
 
         mvc.perform(post("/seeds/generate"))
