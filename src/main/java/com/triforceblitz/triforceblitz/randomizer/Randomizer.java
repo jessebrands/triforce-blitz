@@ -1,5 +1,7 @@
 package com.triforceblitz.triforceblitz.randomizer;
 
+import com.triforceblitz.triforceblitz.python.Interpreter;
+
 import java.nio.file.Path;
 
 public class Randomizer {
@@ -15,9 +17,8 @@ public class Randomizer {
         return path.resolve(ENTRYPOINT_FILENAME).toAbsolutePath();
     }
 
-    public ProcessBuilder generate(String interpreter, String seed, String preset, Path settingsFile) {
-        return new ProcessBuilder(
-                interpreter,
+    public ProcessBuilder generate(Interpreter interpreter, String seed, String preset, Path settingsFile) {
+        return interpreter.processBuilder(
                 getEntrypoint().toString(),
                 "--seed", seed,
                 "--settings", settingsFile.toAbsolutePath().toString(),

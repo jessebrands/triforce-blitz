@@ -2,6 +2,7 @@ package com.triforceblitz.triforceblitz.seeds;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.triforceblitz.triforceblitz.TriforceBlitzConfig;
+import com.triforceblitz.triforceblitz.python.PythonService;
 import com.triforceblitz.triforceblitz.randomizer.RandomizerService;
 import com.triforceblitz.triforceblitz.randomizer.RandomizerSettings;
 import org.slf4j.Logger;
@@ -22,17 +23,21 @@ public class LocalSeedService implements SeedService {
 
     private final TriforceBlitzConfig config;
     private final RandomizerService randomizerService;
+    private final PythonService pythonService;
 
-    public LocalSeedService(TriforceBlitzConfig config, RandomizerService randomizerService) {
+    public LocalSeedService(TriforceBlitzConfig config,
+                            RandomizerService randomizerService,
+                            PythonService pythonService) {
         this.config = config;
         this.randomizerService = randomizerService;
+        this.pythonService = pythonService;
     }
 
     @Override
     public Seed generateSeed() {
         var seed = new Seed(UUID.randomUUID().toString(), UUID.randomUUID().toString());
         // 1. Find a Python interpreter
-        var interpreter = config.getPythonInterpreter();
+        var interpreter = pythonService.findInterpreter();
         // 2. Locate the Randomizer
         var randomizer = randomizerService.getRandomizer(config.getRandomizerVersion());
         // 3. Generate a seed string to pass to the randomizer
