@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${'Seed ' + seed.id}">Seed</title>
+</head>
+<body>
+<main>
+    <h1>Please sit tight!</h1>
+    <p>Your seed has been created but has not been generated yet, however, it should soon start generating!</p>
+
+    <details open>
+        <summary>Show detailed log</summary>
+        <div id="randomizer-log">
+            Connecting...
+        </div>
+    </details>
+</main>
+</body>
+</html>
