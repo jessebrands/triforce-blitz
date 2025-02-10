@@ -1,13 +1,11 @@
-package com.triforceblitz.triforceblitz.seeds;
+package com.triforceblitz.triforceblitz.seeds.generator;
 
 import com.triforceblitz.triforceblitz.TriforceBlitzConfig;
 import com.triforceblitz.triforceblitz.python.PythonService;
 import com.triforceblitz.triforceblitz.randomizer.RandomizerService;
-import org.springframework.core.task.TaskExecutor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import com.triforceblitz.triforceblitz.seeds.Seed;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 

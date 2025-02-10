@@ -1,9 +1,10 @@
-package com.triforceblitz.triforceblitz.seeds;
+package com.triforceblitz.triforceblitz.seeds.generator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.triforceblitz.triforceblitz.python.Interpreter;
 import com.triforceblitz.triforceblitz.randomizer.Randomizer;
 import com.triforceblitz.triforceblitz.randomizer.RandomizerSettings;
+import com.triforceblitz.triforceblitz.seeds.Seed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
