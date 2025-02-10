@@ -34,7 +34,7 @@ public class LocalSeedService implements SeedService {
         // 1. Find a Python interpreter
         var interpreter = config.getPythonInterpreter();
         // 2. Locate the Randomizer
-        var randomizer = randomizerService.getRandomizer("8.1.37-blitz-0.59");
+        var randomizer = randomizerService.getRandomizer(config.getRandomizerVersion());
         // 3. Generate a seed string to pass to the randomizer
         var outputDirectory = config.getSeedStoragePath().resolve(seed.getId());
         var settingsFilename = outputDirectory.resolve(RandomizerSettings.FILENAME);
