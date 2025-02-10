@@ -7,6 +7,7 @@ import com.triforceblitz.triforceblitz.randomizer.RandomizerSettings;
 import com.triforceblitz.triforceblitz.seeds.Seed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Map;
 
 public class GenerateSeedTask implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(GenerateSeedTask.class);
@@ -25,13 +27,15 @@ public class GenerateSeedTask implements Runnable {
     private final Seed seed;
     private final Path romFile;
     private final Path outputDirectory;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public GenerateSeedTask(Interpreter interpreter, Randomizer randomizer, Seed seed, Path romFile, Path outputDirectory) {
+    public GenerateSeedTask(Interpreter interpreter, Randomizer randomizer, Seed seed, Path romFile, Path outputDirectory, SimpMessagingTemplate messagingTemplate) {
         this.interpreter = interpreter;
         this.randomizer = randomizer;
         this.seed = seed;
         this.romFile = romFile;
         this.outputDirectory = outputDirectory;
+        this.messagingTemplate = messagingTemplate;
     }
 
     private void createOutputDirectory() {
@@ -70,7 +74,10 @@ public class GenerateSeedTask implements Runnable {
                  var reader = new BufferedReader(in)) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    log.info("==> {}", line);
+                    messagingTemplate.convertAndSend("/topic/seed/" + seed.getId() + "/randomizer/log", Map.of(
+                            "timestamp", Instant.now(),
+                            "message", line
+                    ));
                 }
             }
             seed.setGeneratedAt(Instant.now());

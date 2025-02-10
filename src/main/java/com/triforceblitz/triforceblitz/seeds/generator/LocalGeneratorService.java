@@ -4,6 +4,7 @@ import com.triforceblitz.triforceblitz.TriforceBlitzConfig;
 import com.triforceblitz.triforceblitz.python.PythonService;
 import com.triforceblitz.triforceblitz.randomizer.RandomizerService;
 import com.triforceblitz.triforceblitz.seeds.Seed;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ExecutorService;
@@ -14,15 +15,17 @@ public class LocalGeneratorService implements GeneratorService {
     private final PythonService pythonService;
     private final RandomizerService randomizerService;
     private final TriforceBlitzConfig config;
+    private final SimpMessagingTemplate messagingTemplate;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public LocalGeneratorService(PythonService pythonService,
                                  RandomizerService randomizerService,
-                                 TriforceBlitzConfig config) {
+                                 TriforceBlitzConfig config, SimpMessagingTemplate messagingTemplate) {
         this.pythonService = pythonService;
         this.randomizerService = randomizerService;
         this.config = config;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @Override
@@ -35,7 +38,8 @@ public class LocalGeneratorService implements GeneratorService {
                 randomizer,
                 seed,
                 config.getRomFile(),
-                config.getSeedStoragePath().resolve(seed.getId())
+                config.getSeedStoragePath().resolve(seed.getId()),
+                messagingTemplate
         ));
         return seed;
     }

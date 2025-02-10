@@ -4,18 +4,91 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${'Seed ' + seed.id}">Seed</title>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+        const seed = {
+            id: /*[[${seed.id}]]*/ undefined,
+        }
+    /*]]>*/
+    </script>
+
+    <style>
+        .generator-log__container {
+            padding: 16px;
+            border-radius: 8px;
+            background: lightgray;
+        }
+
+        .generator-log__header {
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        #randomizer-log {
+            margin-top: 16px;
+            font-family: monospace;
+            overflow-y: auto;
+            height: 200px;
+            max-height: 200px;
+        }
+    </style>
 </head>
 <body>
 <main>
-    <h1>Please sit tight!</h1>
-    <p>Your seed has been created but has not been generated yet, however, it should soon start generating!</p>
+    <h1>Your seed is almost ready!</h1>
+    <p>Your seed has been created but has not been generated yet. You can see the status of the generator below.</p>
 
-    <details open>
-        <summary>Show detailed log</summary>
+    <details open class="generator-log__container">
+        <summary class="generator-log__header">Generator log</summary>
         <div id="randomizer-log">
-            Connecting...
+            <div>Connecting...</div>
         </div>
     </details>
+
+    <script defer>
+        const messageLog = document.getElementById("randomizer-log");
+        const client = new StompJs.Client({
+            brokerURL: 'ws://localhost:8080/websocket'
+        });
+
+        client.onConnect = () => {
+            messageLog.replaceChildren();
+
+            // Set up our message callbacks
+            client.subscribe(`/topic/seed/${seed.id}/randomizer/log`, onRandomizerLog);
+
+            const date = new Date();
+            const timestamp = date.toLocaleTimeString();
+            appendMessage(`[${timestamp}] Connected to Triforce Blitz server`)
+        };
+
+        client.onWebSocketError = () => {
+            appendMessage("Connection error, retrying...")
+        }
+
+        client.onStompError = (frame) => {
+            appendMessage(`STOMP broker error: ${frame.headers.message}`);
+            appendMessage(`Additional details: ${frame.body}`)
+        };
+
+        const appendMessage = (message) => {
+            const messageElement = document.createElement("div");
+            messageElement.innerText = message;
+            messageLog.appendChild(messageElement);
+            messageLog.scrollTop = messageLog.scrollHeight;
+        }
+
+        const onRandomizerLog = frame => {
+            const message = JSON.parse(frame.body);
+            const date = new Date(message.timestamp);
+            const timestamp = date.toLocaleTimeString();
+            appendMessage(`[${timestamp}] ${message.message}`);
+        };
+
+        client.activate();
+    </script>
 </main>
 </body>
 </html>
