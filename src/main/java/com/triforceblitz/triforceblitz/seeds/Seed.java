@@ -5,11 +5,16 @@ import java.util.UUID;
 
 public class Seed {
     private final UUID id;
-    private String seed;
-    private String preset;
-    private Instant createdAt;
+    private final String seed;
+    private final String preset;
+    private final String version;
+    private final boolean cooperative;
+    private boolean spoilerLocked = false;
+    private final Instant createdAt;
 
-    public Seed(String seed, String preset) {
+    public Seed(String seed, String preset, String version, boolean cooperative) {
+        this.version = version;
+        this.cooperative = cooperative;
         this.id = UUID.randomUUID();
         this.seed = seed;
         this.preset = preset;
@@ -24,23 +29,31 @@ public class Seed {
         return seed;
     }
 
-    public void setSeed(String seed) {
-        this.seed = seed;
-    }
-
     public String getPreset() {
         return preset;
     }
 
-    public void setPreset(String preset) {
-        this.preset = preset;
+    public String getVersion() {
+        return version;
     }
+
+    public boolean isCooperative() {
+        return cooperative;
+    }
+
+    public boolean isSpoilerLocked() {
+        return spoilerLocked;
+    }
+
+    void lockSpoiler() {
+        spoilerLocked = true;
+    }
+
+     void unlockSpoiler() {
+        spoilerLocked = false;
+     }
 
     public Instant getCreatedAt() {
         return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
     }
 }
