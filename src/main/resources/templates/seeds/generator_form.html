@@ -10,6 +10,11 @@
     <form method="post" th:action="@{/seeds/generate}" th:object="${form}">
         <h1>Generate a Triforce Blitz seed</h1>
         <div>
+            <input type="checkbox" id="cooperative-checkbox" th:field="*{cooperative}" />
+            <label for="cooperative-checkbox">Generate a co-op seed</label>
+        </div>
+
+        <div>
             <button type="submit">Generate seed</button>
         </div>
     </form>

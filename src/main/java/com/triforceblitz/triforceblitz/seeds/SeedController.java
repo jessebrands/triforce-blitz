@@ -32,7 +32,7 @@ public class SeedController {
     public String generateSeed(@ModelAttribute("form") GenerateSeedForm form,
                                BindingResult bindingResult,
                                Model model) {
-        var seed = seedService.generateSeed();
+        var seed = seedService.createSeed(form.isCooperative());
         return "redirect:/seeds/" + seed.getId();
     }
 

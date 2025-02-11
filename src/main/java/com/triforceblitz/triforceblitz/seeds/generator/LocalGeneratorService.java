@@ -44,7 +44,8 @@ public class LocalGeneratorService implements GeneratorService {
     public Seed generateSeed(String version, String randomizerSeed, String preset) {
         var interpreter = pythonService.findInterpreter();
         var randomizer = randomizerService.getRandomizer(version);
-        var seed = new Seed(randomizerSeed, preset, version, false);
+        var cooperative = preset.contains("Co-op");
+        var seed = new Seed(randomizerSeed, preset, version, cooperative);
         executor.submit(new GenerateSeedTask(
                 interpreter,
                 randomizer,

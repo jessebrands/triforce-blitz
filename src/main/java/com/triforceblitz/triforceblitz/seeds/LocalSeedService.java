@@ -46,11 +46,15 @@ public class LocalSeedService implements SeedService {
     }
 
     @Override
-    public SeedDetails generateSeed() {
+    public SeedDetails createSeed(boolean cooperative) {
+        var preset = config.getRandomizerPreset();
+        if (cooperative) {
+            preset = "Triforce Blitz S4 Co-op";
+        }
         var seed = generatorService.generateSeed(
                 config.getRandomizerVersion(),
                 UUID.randomUUID().toString(),
-                config.getRandomizerPreset()
+                preset
         );
         seedRepository.save(seed);
         return seedToDetails(seed);

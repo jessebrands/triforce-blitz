@@ -7,7 +7,7 @@ import java.util.UUID;
 public interface SeedService {
     Optional<SeedDetails> getById(UUID id);
 
-    SeedDetails generateSeed();
+    SeedDetails createSeed(boolean cooperative);
 
     void lockSpoilerLog(UUID id);
 
