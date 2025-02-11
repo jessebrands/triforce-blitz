@@ -4,6 +4,10 @@ import java.time.Instant;
 import java.util.UUID;
 
 public class Seed {
+    public static final String PATCH_FILENAME = "TriforceBlitz.zpf";
+    public static final String COOP_PATCH_FILENAME = "TriforceBlitz.zpfz";
+    public static final String SPOILER_LOG_FILENAME = "TriforceBlitz_Spoiler.json";
+
     private final UUID id;
     private final String seed;
     private final String preset;

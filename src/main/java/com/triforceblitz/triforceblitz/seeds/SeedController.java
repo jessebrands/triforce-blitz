@@ -38,7 +38,7 @@ public class SeedController {
 
     @GetMapping("/{id}")
     public String getSeed(@PathVariable UUID id, Model model) {
-        model.addAttribute("seed", seedService.getById(id));
+        model.addAttribute("seed", seedService.getById(id).orElse(null));
         return "seeds/seed";
     }
 

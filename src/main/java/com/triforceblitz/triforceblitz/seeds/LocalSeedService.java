@@ -5,6 +5,7 @@ import com.triforceblitz.triforceblitz.seeds.generator.GeneratorService;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -21,18 +22,27 @@ public class LocalSeedService implements SeedService {
         this.seedRepository = seedRepository;
     }
 
+    private SeedDetails seedToDetails(Seed seed) {
+        return new SeedDetails(
+                seed.getId(),
+                seed.getSeed(),
+                seed.getPreset(),
+                seed.getVersion(),
+                seed.isCooperative(),
+                seed.isSpoilerLocked(),
+                seed.getCreatedAt(),
+                getSeedLocation(seed.getId())
+        );
+    }
+
     private Path getSeedLocation(UUID id) {
         return config.getSeedStoragePath().resolve(id.toString());
     }
 
     @Override
-    public SeedDetails getById(UUID id) {
+    public Optional<SeedDetails> getById(UUID id) {
         return seedRepository.findById(id)
-                .map(seed -> new SeedDetails(
-                        seed.getId().toString(),
-                        getSeedLocation(seed.getId())
-                ))
-                .orElseThrow(() -> new RuntimeException("seed not found"));
+                .map(this::seedToDetails);
     }
 
     @Override
@@ -42,23 +52,21 @@ public class LocalSeedService implements SeedService {
                 UUID.randomUUID().toString(),
                 config.getRandomizerPreset()
         );
-        seedRepository.save(seed);
-        return getById(seed.getId());
+        seed = seedRepository.save(seed);
+        return seedToDetails(seed);
     }
 
     @Override
     public Path getPatchFilename(UUID id) {
-        var seed = getById(id);
-        return config.getSeedStoragePath()
-                .resolve(seed.getId())
-                .resolve("TriforceBlitz.zpf");
+        return getById(id)
+                .map(SeedDetails::getPatchFile)
+                .orElseThrow(() -> new RuntimeException("not found"));
     }
 
     @Override
     public Path getSpoilerLogFilename(UUID id) {
-        var seed = getById(id);
-        return config.getSeedStoragePath()
-                .resolve(seed.getId())
-                .resolve("TriforceBlitz_Spoiler.json");
+        return getById(id)
+                .map(SeedDetails::getSpoilerLogFile)
+                .orElseThrow(() -> new RuntimeException("not found"));
     }
 }
