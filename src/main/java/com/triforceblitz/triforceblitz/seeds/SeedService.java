@@ -1,6 +1,6 @@
 package com.triforceblitz.triforceblitz.seeds;
 
 public interface SeedService {
-    Seed getById(String id);
-    Seed generateSeed();
+    SeedDetails getById(String id);
+    SeedDetails generateSeed();
 }

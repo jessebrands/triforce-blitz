@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.nio.file.Path;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.instanceOf;
@@ -32,7 +33,10 @@ class SeedControllerTests {
 
     @Test
     void whenValidGeneratorFormPosted_thenRedirectToSeed() throws Exception {
-        var expected = new Seed(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+        var expected = new SeedDetails(
+                UUID.randomUUID().toString(),
+                Path.of("seed")
+        );
         when(seedService.generateSeed()).thenReturn(expected);
 
         mvc.perform(post("/seeds/generate"))

@@ -4,6 +4,7 @@ import com.triforceblitz.triforceblitz.TriforceBlitzConfig;
 import com.triforceblitz.triforceblitz.seeds.generator.GeneratorService;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Path;
 import java.util.UUID;
 
 @Service
@@ -20,19 +21,25 @@ public class LocalSeedService implements SeedService {
         this.seedRepository = seedRepository;
     }
 
+    private Path getSeedLocation(String id) {
+        return config.getSeedStoragePath().resolve(id);
+    }
+
     @Override
-    public Seed getById(String id) {
+    public SeedDetails getById(String id) {
         return seedRepository.findById(id)
+                .map(seed -> new SeedDetails(seed.getId(), getSeedLocation(seed.getId())))
                 .orElseThrow(() -> new RuntimeException("seed not found"));
     }
 
     @Override
-    public Seed generateSeed() {
+    public SeedDetails generateSeed() {
         var seed = generatorService.generateSeed(
                 config.getRandomizerVersion(),
                 UUID.randomUUID().toString(),
                 config.getRandomizerPreset()
         );
-        return seedRepository.save(seed);
+        seedRepository.save(seed);
+        return getById(seed.getId());
     }
 }
