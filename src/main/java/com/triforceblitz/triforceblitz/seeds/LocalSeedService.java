@@ -57,6 +57,22 @@ public class LocalSeedService implements SeedService {
     }
 
     @Override
+    public void lockSpoilerLog(UUID id) {
+        seedRepository.findById(id).ifPresent(seed -> {
+            seed.lockSpoiler();
+            seedRepository.save(seed);
+        });
+    }
+
+    @Override
+    public void unlockSpoilerLog(UUID id) {
+        seedRepository.findById(id).ifPresent(seed -> {
+            seed.unlockSpoiler();
+            seedRepository.save(seed);
+        });
+    }
+
+    @Override
     public Path getPatchFilename(UUID id) {
         return getById(id)
                 .map(SeedDetails::getPatchFile)

@@ -9,6 +9,10 @@ public interface SeedService {
 
     SeedDetails generateSeed();
 
+    void lockSpoilerLog(UUID id);
+
+    void unlockSpoilerLog(UUID id);
+
     Path getPatchFilename(UUID id);
 
     Path getSpoilerLogFilename(UUID id);
