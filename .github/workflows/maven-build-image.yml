@@ -33,4 +33,7 @@ jobs:
         settings-path: ${{ github.workspace }}
 
     - name: Build with Maven
-      run: mvn spring-boot:build-image -Dspring-boot.build-image.imageName=jgbrands/triforce-blitz
+      run: mvn spring-boot:build-image -Dspring-boot.build-image.imageName=${{ vars.DOCKERHUB_USERNAME }}/triforce-blitz
+
+    - name: Publish image to Docker Hub
+      run: docker push ${{ vars.DOCKERHUB_USERNAME }}/triforce-blitz:latest
