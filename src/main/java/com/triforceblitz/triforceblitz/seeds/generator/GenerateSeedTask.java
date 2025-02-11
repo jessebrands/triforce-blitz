@@ -79,7 +79,6 @@ public class GenerateSeedTask implements Runnable {
                     eventPublisher.publishEvent(new GeneratorLogEvent(seed, line));
                 }
             }
-            seed.setGeneratedAt(Instant.now());
         } catch (IOException e) {
             log.error("Got error while running Ocarina of Time Randomizer: {}", e.getMessage());
             eventPublisher.publishEvent(new GeneratorFailedEvent(seed, e));

@@ -1,13 +1,14 @@
 package com.triforceblitz.triforceblitz.seeds;
 
 import java.nio.file.Path;
+import java.util.UUID;
 
 public interface SeedService {
-    SeedDetails getById(String id);
+    SeedDetails getById(UUID id);
 
     SeedDetails generateSeed();
 
-    Path getPatchFilename(String id);
+    Path getPatchFilename(UUID id);
 
-    Path getSpoilerLogFilename(String id);
+    Path getSpoilerLogFilename(UUID id);
 }

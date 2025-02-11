@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/seeds")
@@ -36,13 +37,13 @@ public class SeedController {
     }
 
     @GetMapping("/{id}")
-    public String getSeed(@PathVariable String id, Model model) {
+    public String getSeed(@PathVariable UUID id, Model model) {
         model.addAttribute("seed", seedService.getById(id));
         return "seeds/seed";
     }
 
     @GetMapping("/{id}/patch")
-    public ResponseEntity<Resource> getPatchFile(@PathVariable String id) throws IOException {
+    public ResponseEntity<Resource> getPatchFile(@PathVariable UUID id) throws IOException {
         var patchFilename = seedService.getPatchFilename(id);
         var resource = new ByteArrayResource(Files.readAllBytes(patchFilename));
 
@@ -52,7 +53,7 @@ public class SeedController {
     }
 
     @GetMapping("/{id}/spoiler")
-    public ResponseEntity<Resource> getSpoilerLog(@PathVariable String id) throws IOException {
+    public ResponseEntity<Resource> getSpoilerLog(@PathVariable UUID id) throws IOException {
         var spoilerFilename = seedService.getSpoilerLogFilename(id);
         var resource = new ByteArrayResource(Files.readAllBytes(spoilerFilename));
 

@@ -21,14 +21,17 @@ public class LocalSeedService implements SeedService {
         this.seedRepository = seedRepository;
     }
 
-    private Path getSeedLocation(String id) {
-        return config.getSeedStoragePath().resolve(id);
+    private Path getSeedLocation(UUID id) {
+        return config.getSeedStoragePath().resolve(id.toString());
     }
 
     @Override
-    public SeedDetails getById(String id) {
+    public SeedDetails getById(UUID id) {
         return seedRepository.findById(id)
-                .map(seed -> new SeedDetails(seed.getId(), getSeedLocation(seed.getId())))
+                .map(seed -> new SeedDetails(
+                        seed.getId().toString(),
+                        getSeedLocation(seed.getId())
+                ))
                 .orElseThrow(() -> new RuntimeException("seed not found"));
     }
 
@@ -44,7 +47,7 @@ public class LocalSeedService implements SeedService {
     }
 
     @Override
-    public Path getPatchFilename(String id) {
+    public Path getPatchFilename(UUID id) {
         var seed = getById(id);
         return config.getSeedStoragePath()
                 .resolve(seed.getId())
@@ -52,7 +55,7 @@ public class LocalSeedService implements SeedService {
     }
 
     @Override
-    public Path getSpoilerLogFilename(String id) {
+    public Path getSpoilerLogFilename(UUID id) {
         var seed = getById(id);
         return config.getSeedStoragePath()
                 .resolve(seed.getId())

@@ -4,20 +4,19 @@ import java.time.Instant;
 import java.util.UUID;
 
 public class Seed {
-    private final String id;
+    private final UUID id;
     private String seed;
     private String preset;
     private Instant createdAt;
-    private Instant generatedAt;
 
     public Seed(String seed, String preset) {
-        this.id = UUID.randomUUID().toString();
+        this.id = UUID.randomUUID();
         this.seed = seed;
         this.preset = preset;
         this.createdAt = Instant.now();
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -43,13 +42,5 @@ public class Seed {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public Instant getGeneratedAt() {
-        return generatedAt;
-    }
-
-    public void setGeneratedAt(Instant generatedAt) {
-        this.generatedAt = generatedAt;
     }
 }

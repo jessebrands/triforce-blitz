@@ -50,7 +50,7 @@ public class LocalGeneratorService implements GeneratorService {
                 randomizer,
                 seed,
                 config.getRomFile(),
-                config.getSeedStoragePath().resolve(seed.getId()),
+                config.getSeedStoragePath().resolve(seed.getId().toString()),
                 eventPublisher
         ));
         return seed;
