@@ -10,17 +10,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 public class GenerateSeedTask implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(GenerateSeedTask.class);
+
+    private static final DateTimeFormatter filenameTimestampFormatter = DateTimeFormatter
+            .ofPattern("yyyyMMdd'T'hhmmss")
+            .withZone(ZoneOffset.UTC);
 
     private final Interpreter interpreter;
     private final Randomizer randomizer;
@@ -68,7 +71,13 @@ public class GenerateSeedTask implements Runnable {
                 seed.getPreset(),
                 settingsFilename
         );
-        try {
+        // Get a handle towards the log file.
+        var logFilename = String.format("TriforceBlitz_Randomizer_%s.log",
+                filenameTimestampFormatter.format(Instant.now()));
+        var logFile = outputDirectory.resolve(logFilename).toFile();
+        // Open the log file and begin generating.
+        try (var logFileWriter = new FileWriter(logFile);
+             var logWriter = new BufferedWriter(logFileWriter)) {
             log.info("Running Ocarina of Time randomizer");
             var process = processBuilder.start();
             try (var inStream = process.getErrorStream();
@@ -76,6 +85,8 @@ public class GenerateSeedTask implements Runnable {
                  var reader = new BufferedReader(in)) {
                 String line;
                 while ((line = reader.readLine()) != null) {
+                    logWriter.write(line);
+                    logWriter.newLine();
                     eventPublisher.publishEvent(new GeneratorLogEvent(seed, line));
                 }
             }
