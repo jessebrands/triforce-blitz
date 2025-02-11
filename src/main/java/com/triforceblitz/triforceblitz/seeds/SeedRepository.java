@@ -1,10 +1,8 @@
 package com.triforceblitz.triforceblitz.seeds;
 
-import java.util.Optional;
+import org.springframework.data.repository.CrudRepository;
+
 import java.util.UUID;
 
-public interface SeedRepository {
-    Optional<Seed> findById(UUID id);
-
-    void save(Seed seed);
+public interface SeedRepository extends CrudRepository<Seed, UUID> {
 }

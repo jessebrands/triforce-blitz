@@ -1,27 +1,55 @@
 package com.triforceblitz.triforceblitz.seeds;
 
+import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.Instant;
 import java.util.UUID;
 
+@Entity
+@Table(name = "seeds")
 public class Seed {
     public static final String PATCH_FILENAME = "TriforceBlitz.zpf";
     public static final String COOP_PATCH_FILENAME = "TriforceBlitz.zpfz";
     public static final String SPOILER_LOG_FILENAME = "TriforceBlitz_Spoiler.json";
 
+    @Id
+    @Column(name = "id", nullable = false)
     private final UUID id;
-    private final String seed;
-    private final String preset;
-    private final String version;
-    private final boolean cooperative;
-    private boolean spoilerLocked = false;
-    private final Instant createdAt;
 
-    public Seed(String seed, String preset, String version, boolean cooperative) {
-        this.version = version;
-        this.cooperative = cooperative;
+    @Version
+    @Column(name = "version", nullable = false)
+    private Integer version;
+
+    @Column(name = "seed", length = 64, nullable = false)
+    private String seed;
+
+    @Column(name = "preset", length = 32, nullable = false)
+    private String preset;
+
+    @Column(name = "randomizer_version", length = 32, nullable = false)
+    private String randomizerVersion;
+
+    @Column(name = "cooperative", nullable = false)
+    private boolean cooperative = false;
+
+    @Column(name = "spoiler_locked", nullable = false)
+    private boolean spoilerLocked = false;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false)
+    private Instant createdAt;
+
+    protected Seed() {
+        this.id = UUID.randomUUID();
+    }
+
+    public Seed(String seed, String preset, String randomizerVersion, boolean cooperative) {
         this.id = UUID.randomUUID();
         this.seed = seed;
         this.preset = preset;
+        this.randomizerVersion = randomizerVersion;
+        this.cooperative = cooperative;
         this.createdAt = Instant.now();
     }
 
@@ -37,8 +65,8 @@ public class Seed {
         return preset;
     }
 
-    public String getVersion() {
-        return version;
+    public String getRandomizerVersion() {
+        return randomizerVersion;
     }
 
     public boolean isCooperative() {

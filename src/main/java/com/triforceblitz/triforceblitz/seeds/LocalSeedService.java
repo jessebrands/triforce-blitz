@@ -27,7 +27,7 @@ public class LocalSeedService implements SeedService {
                 seed.getId(),
                 seed.getSeed(),
                 seed.getPreset(),
-                seed.getVersion(),
+                seed.getRandomizerVersion(),
                 seed.isCooperative(),
                 seed.isSpoilerLocked(),
                 seed.getCreatedAt(),
