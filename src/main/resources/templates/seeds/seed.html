@@ -36,6 +36,10 @@
     </style>
 </head>
 <body>
+<main th:if="${seed.generated}">
+    <h1>Play Triforce Blitz</h1>
+</main>
+
 <main th:unless="${seed.generated}">
     <h1>Your seed is almost ready!</h1>
     <p>Your seed has been created but has not been generated yet. You can see the status of the generator below.</p>
@@ -57,7 +61,8 @@
             messageLog.replaceChildren();
 
             // Set up our message callbacks
-            client.subscribe(`/topic/seed/${seed.id}/randomizer/log`, onRandomizerLog);
+            client.subscribe(`/topic/seed/${seed.id}/generator/log`, onGeneratorLog);
+            client.subscribe(`/topic/seed/${seed.id}/generator/status`, onGeneratorStatus)
 
             const date = new Date();
             const timestamp = date.toLocaleTimeString();
@@ -80,12 +85,19 @@
             messageLog.scrollTop = messageLog.scrollHeight;
         }
 
-        const onRandomizerLog = frame => {
+        const onGeneratorLog = frame => {
             const message = JSON.parse(frame.body);
             const date = new Date(message.timestamp);
             const timestamp = date.toLocaleTimeString();
             appendMessage(`[${timestamp}] ${message.message}`);
         };
+
+        const onGeneratorStatus = frame => {
+            const message = JSON.parse(frame.body);
+            if (message.status === "GENERATED") {
+                location.reload();
+            }
+        }
 
         client.activate();
     </script>

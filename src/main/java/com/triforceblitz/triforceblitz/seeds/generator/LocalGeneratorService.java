@@ -4,7 +4,10 @@ import com.triforceblitz.triforceblitz.TriforceBlitzConfig;
 import com.triforceblitz.triforceblitz.python.PythonService;
 import com.triforceblitz.triforceblitz.randomizer.RandomizerService;
 import com.triforceblitz.triforceblitz.seeds.Seed;
+import com.triforceblitz.triforceblitz.seeds.generator.events.GeneratorFailedEvent;
+import com.triforceblitz.triforceblitz.seeds.generator.events.GeneratorFinishedEvent;
 import com.triforceblitz.triforceblitz.seeds.generator.events.GeneratorLogEvent;
+import com.triforceblitz.triforceblitz.seeds.generator.events.GeneratorStartedEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -57,10 +60,46 @@ public class LocalGeneratorService implements GeneratorService {
     public void onGeneratorLogEvent(GeneratorLogEvent event) {
         var seed = event.getSeed();
         messagingTemplate.convertAndSend(
-                "/topic/seed/" + seed.getId() + "/randomizer/log",
+                "/topic/seed/" + seed.getId() + "/generator/log",
                 Map.of(
                         "timestamp", Instant.ofEpochMilli(event.getTimestamp()),
                         "message", event.getMessage()
+                )
+        );
+    }
+
+    @EventListener
+    public void onGeneratorStartedEvent(GeneratorStartedEvent event) {
+        var seed = event.getSeed();
+        messagingTemplate.convertAndSend(
+                "/topic/seed/" + seed.getId() + "/generator/status",
+                Map.of(
+                        "timestamp", Instant.ofEpochMilli(event.getTimestamp()),
+                        "status", GenerateSeedStatus.STARTED
+                )
+        );
+    }
+
+    @EventListener
+    public void onGeneratorFinishedEvent(GeneratorFinishedEvent event) {
+        var seed = event.getSeed();
+        messagingTemplate.convertAndSend(
+                "/topic/seed/" + seed.getId() + "/generator/status",
+                Map.of(
+                        "timestamp", Instant.ofEpochMilli(event.getTimestamp()),
+                        "status", GenerateSeedStatus.GENERATED
+                )
+        );
+    }
+
+    @EventListener
+    public void onGeneratorFailedEvent(GeneratorFailedEvent event) {
+        var seed = event.getSeed();
+        messagingTemplate.convertAndSend(
+                "/topic/seed/" + seed.getId() + "/generator/status",
+                Map.of(
+                        "timestamp", Instant.ofEpochMilli(event.getTimestamp()),
+                        "status", GenerateSeedStatus.FAILED
                 )
         );
     }

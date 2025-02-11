@@ -5,9 +5,7 @@ import com.triforceblitz.triforceblitz.python.Interpreter;
 import com.triforceblitz.triforceblitz.randomizer.Randomizer;
 import com.triforceblitz.triforceblitz.randomizer.RandomizerSettings;
 import com.triforceblitz.triforceblitz.seeds.Seed;
-import com.triforceblitz.triforceblitz.seeds.generator.events.GeneratorFinishedEvent;
-import com.triforceblitz.triforceblitz.seeds.generator.events.GeneratorLogEvent;
-import com.triforceblitz.triforceblitz.seeds.generator.events.GeneratorStartedEvent;
+import com.triforceblitz.triforceblitz.seeds.generator.events.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -46,6 +44,7 @@ public class GenerateSeedTask implements Runnable {
             Files.createDirectories(outputDirectory);
         } catch (IOException e) {
             log.error("Failed to create output directory, please check read/write permissions");
+            eventPublisher.publishEvent(new GeneratorFailedEvent(seed, e));
             throw new UncheckedIOException(e);
         }
     }
@@ -57,6 +56,7 @@ public class GenerateSeedTask implements Runnable {
             new ObjectMapper().writeValue(settingsFilename.toFile(), settings);
         } catch (IOException e) {
             log.error("Could not create settings file");
+            eventPublisher.publishEvent(new GeneratorFailedEvent(seed, e));
             throw new UncheckedIOException(e);
         }
     }
@@ -81,6 +81,8 @@ public class GenerateSeedTask implements Runnable {
             }
             seed.setGeneratedAt(Instant.now());
         } catch (IOException e) {
+            log.error("Got error while running Ocarina of Time Randomizer: {}", e.getMessage());
+            eventPublisher.publishEvent(new GeneratorFailedEvent(seed, e));
             throw new UncheckedIOException(e);
         }
     }
