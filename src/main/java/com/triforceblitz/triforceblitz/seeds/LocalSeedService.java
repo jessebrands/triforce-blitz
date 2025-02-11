@@ -52,7 +52,7 @@ public class LocalSeedService implements SeedService {
                 UUID.randomUUID().toString(),
                 config.getRandomizerPreset()
         );
-        seed = seedRepository.save(seed);
+        seedRepository.save(seed);
         return seedToDetails(seed);
     }
 

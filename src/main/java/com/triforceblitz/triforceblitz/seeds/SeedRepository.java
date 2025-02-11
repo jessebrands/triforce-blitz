@@ -6,5 +6,5 @@ import java.util.UUID;
 public interface SeedRepository {
     Optional<Seed> findById(UUID id);
 
-    Seed save(Seed seed);
+    void save(Seed seed);
 }
