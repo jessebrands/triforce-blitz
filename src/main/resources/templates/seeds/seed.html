@@ -51,13 +51,45 @@
                 <a href="https://ootrandomizer.com">OoTRandomizer.com</a>.</p>
         </div>
 
-        <div>
+        <div th:if="${!seed.spoilerLocked}">
             <a th:href="@{/seeds/{id}/spoiler(id=${seed.id})}">
                 <button type="button">Download spoiler log</button>
             </a>
             <p>The spoiler log contains all information about the generated seed. You can use this file to find out
                 where items are located, as well as see how the randomizer logically solved the seed.</p>
         </div>
+    </section>
+
+    <section>
+        <h2>Seed details</h2>
+        <table>
+            <tbody>
+            <tr>
+                <th scope="row">ID</th>
+                <td th:text="${seed.id}"></td>
+            </tr>
+            <tr>
+                <th scope="row">Generator version</th>
+                <td th:text="${seed.version}"></td>
+            </tr>
+            <tr>
+                <th scope="row">Generator preset</th>
+                <td th:text="${seed.preset}">Preset</td>
+            </tr>
+            <tr>
+                <th scope="row">Cooperative</th>
+                <td th:text="${seed.cooperative}"></td>
+            </tr>
+            <tr>
+                <th scope="row">Created at</th>
+                <td th:text="${#temporals.format(seed.createdAt)}"></td>
+            </tr>
+            <tr th:if="${seed.generated}">
+                <th scope="row">Generated at</th>
+                <td th:text="${#temporals.format(seed.generatedAt)}"></td>
+            </tr>
+            </tbody>
+        </table>
     </section>
 </main>
 
