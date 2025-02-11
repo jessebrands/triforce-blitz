@@ -8,20 +8,11 @@ import java.nio.file.Path;
 @Configuration
 @ConfigurationProperties(prefix = "triforce-blitz")
 public class TriforceBlitzConfig {
-    private String pythonInterpreter;
     private Path randomizersPath;
     private Path seedStoragePath;
     private Path romFile;
     private String randomizerVersion;
     private String randomizerPreset;
-
-    public String getPythonInterpreter() {
-        return pythonInterpreter;
-    }
-
-    public void setPythonInterpreter(String pythonInterpreter) {
-        this.pythonInterpreter = pythonInterpreter;
-    }
 
     public Path getRandomizersPath() {
         return randomizersPath;
