@@ -10,7 +10,7 @@
         /*<![CDATA[*/
         const seed = {
             id: /*[[${seed.id}]]*/ undefined,
-        }
+        };
         /*]]>*/
     </script>
 
@@ -107,7 +107,7 @@
     <script defer>
         const messageLog = document.getElementById("randomizer-log");
         const client = new StompJs.Client({
-            brokerURL: 'ws://localhost:8080/websocket'
+            brokerURL: '/websocket'
         });
 
         client.onConnect = () => {
