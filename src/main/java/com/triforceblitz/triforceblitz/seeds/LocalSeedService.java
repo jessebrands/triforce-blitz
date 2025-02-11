@@ -42,4 +42,20 @@ public class LocalSeedService implements SeedService {
         seedRepository.save(seed);
         return getById(seed.getId());
     }
+
+    @Override
+    public Path getPatchFilename(String id) {
+        var seed = getById(id);
+        return config.getSeedStoragePath()
+                .resolve(seed.getId())
+                .resolve("TriforceBlitz.zpf");
+    }
+
+    @Override
+    public Path getSpoilerLogFilename(String id) {
+        var seed = getById(id);
+        return config.getSeedStoragePath()
+                .resolve(seed.getId())
+                .resolve("TriforceBlitz_Spoiler.json");
+    }
 }

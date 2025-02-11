@@ -1,9 +1,16 @@
 package com.triforceblitz.triforceblitz.seeds;
 
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.nio.file.Files;
 
 @Controller
 @RequestMapping("/seeds")
@@ -32,5 +39,25 @@ public class SeedController {
     public String getSeed(@PathVariable String id, Model model) {
         model.addAttribute("seed", seedService.getById(id));
         return "seeds/seed";
+    }
+
+    @GetMapping("/{id}/patch")
+    public ResponseEntity<Resource> getPatchFile(@PathVariable String id) throws IOException {
+        var patchFilename = seedService.getPatchFilename(id);
+        var resource = new ByteArrayResource(Files.readAllBytes(patchFilename));
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }
+
+    @GetMapping("/{id}/spoiler")
+    public ResponseEntity<Resource> getSpoilerLog(@PathVariable String id) throws IOException {
+        var spoilerFilename = seedService.getSpoilerLogFilename(id);
+        var resource = new ByteArrayResource(Files.readAllBytes(spoilerFilename));
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(resource);
     }
 }

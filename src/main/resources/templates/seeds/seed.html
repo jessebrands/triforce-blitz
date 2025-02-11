@@ -7,11 +7,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
 
     <script th:inline="javascript">
-    /*<![CDATA[*/
+        /*<![CDATA[*/
         const seed = {
             id: /*[[${seed.id}]]*/ undefined,
         }
-    /*]]>*/
+        /*]]>*/
     </script>
 
     <style>
@@ -30,6 +30,8 @@
             margin-top: 16px;
             font-family: monospace;
             overflow-y: auto;
+            overflow-x: visible;
+            word-break: break-word;
             height: 200px;
             max-height: 200px;
         }
@@ -38,6 +40,25 @@
 <body>
 <main th:if="${seed.generated}">
     <h1>Play Triforce Blitz</h1>
+
+    <section>
+        <h2>Actions</h2>
+        <div>
+            <a th:href="@{/seeds/{id}/patch(id=${seed.id})}">
+                <button type="button">Download patch</button>
+            </a>
+            <p>You can use this file to patch your Ocarina of Time ROM using the official patcher over at
+                <a href="https://ootrandomizer.com">OoTRandomizer.com</a>.</p>
+        </div>
+
+        <div>
+            <a th:href="@{/seeds/{id}/spoiler(id=${seed.id})}">
+                <button type="button">Download spoiler log</button>
+            </a>
+            <p>The spoiler log contains all information about the generated seed. You can use this file to find out
+                where items are located, as well as see how the randomizer logically solved the seed.</p>
+        </div>
+    </section>
 </main>
 
 <main th:unless="${seed.generated}">
