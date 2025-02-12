@@ -1,6 +1,6 @@
 package com.triforceblitz.triforceblitz.seeds.racetime;
 
-import com.triforceblitz.triforceblitz.racetime.RacetimeService;
+import com.triforceblitz.triforceblitz.racetime.RacetimeClient;
 import com.triforceblitz.triforceblitz.seeds.SeedRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +8,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.URL;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -16,14 +15,14 @@ import java.util.concurrent.TimeUnit;
 public class RacetimeLockService {
     private static final Logger log = LoggerFactory.getLogger(RacetimeLockService.class);
 
-    private final RacetimeService racetimeService;
+    private final RacetimeClient racetimeClient;
     private final RacetimeLockRepository lockRepository;
     private final SeedRepository seedRepository;
 
-    public RacetimeLockService(RacetimeService racetimeService,
+    public RacetimeLockService(RacetimeClient racetimeClient,
                                RacetimeLockRepository lockRepository,
                                SeedRepository seedRepository) {
-        this.racetimeService = racetimeService;
+        this.racetimeClient = racetimeClient;
         this.lockRepository = lockRepository;
         this.seedRepository = seedRepository;
     }
@@ -42,7 +41,7 @@ public class RacetimeLockService {
         var locks = lockRepository.findAllLockedLocks();
         for (var lock : locks) {
             log.info("Checking Racetime.gg race {}", lock.getRaceSlug());
-            var response = racetimeService.getRace("ootr", lock.getRaceSlug());
+            var response = racetimeClient.getRace("ootr", lock.getRaceSlug());
             if (!response.getStatusCode().is2xxSuccessful()) {
                 log.warn("Could not get race ootr/{}: HTTP error {}",
                         lock.getRaceSlug(),

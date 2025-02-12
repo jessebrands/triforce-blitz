@@ -9,10 +9,10 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 @Configuration
 public class RacetimeConfig {
     @Bean
-    public RacetimeService racetimeService() {
+    public RacetimeClient racetimeService() {
         var client = RestClient.builder().baseUrl("https://racetime.gg").build();
         var adapter = RestClientAdapter.create(client);
         var factory = HttpServiceProxyFactory.builderFor(adapter).build();
-        return factory.createClient(RacetimeService.class);
+        return factory.createClient(RacetimeClient.class);
     }
 }
