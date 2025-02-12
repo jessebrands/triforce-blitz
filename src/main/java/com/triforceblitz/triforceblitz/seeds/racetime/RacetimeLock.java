@@ -15,7 +15,7 @@ public class RacetimeLock {
     @Column(name = "race_slug", length = 32, unique = true, nullable = false)
     private String raceSlug;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "seed_id", referencedColumnName = "id", unique = true, nullable = false)
     private Seed seed;
 

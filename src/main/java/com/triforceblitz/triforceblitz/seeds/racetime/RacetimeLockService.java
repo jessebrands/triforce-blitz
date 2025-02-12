@@ -1,6 +1,9 @@
 package com.triforceblitz.triforceblitz.seeds.racetime;
 
 import com.triforceblitz.triforceblitz.racetime.RacetimeClient;
+import com.triforceblitz.triforceblitz.racetime.RacetimeService;
+import com.triforceblitz.triforceblitz.racetime.errors.RaceNotFoundException;
+import com.triforceblitz.triforceblitz.racetime.race.Race;
 import com.triforceblitz.triforceblitz.seeds.SeedRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,14 +18,14 @@ import java.util.concurrent.TimeUnit;
 public class RacetimeLockService {
     private static final Logger log = LoggerFactory.getLogger(RacetimeLockService.class);
 
-    private final RacetimeClient racetimeClient;
+    private final RacetimeService racetimeService;
     private final RacetimeLockRepository lockRepository;
     private final SeedRepository seedRepository;
 
-    public RacetimeLockService(RacetimeClient racetimeClient,
+    public RacetimeLockService(RacetimeService racetimeService,
                                RacetimeLockRepository lockRepository,
                                SeedRepository seedRepository) {
-        this.racetimeClient = racetimeClient;
+        this.racetimeService = racetimeService;
         this.lockRepository = lockRepository;
         this.seedRepository = seedRepository;
     }
@@ -36,29 +39,31 @@ public class RacetimeLockService {
         lockRepository.save(lock);
     }
 
-    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.MINUTES)
-    public void checkUnlocks() {
-        var locks = lockRepository.findAllLockedLocks();
-        for (var lock : locks) {
+    private void checkUnlock(RacetimeLock lock) {
+        var seed = lock.getSeed();
+        try {
             log.info("Checking Racetime.gg race {}", lock.getRaceSlug());
-            var response = racetimeClient.getRace("ootr", lock.getRaceSlug());
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                log.warn("Could not get race ootr/{}: HTTP error {}",
-                        lock.getRaceSlug(),
-                        response.getStatusCode().value());
-                continue;
-            }
-            var race = response.getBody();
-            if (race == null) {
-                log.warn("Got a HTTP 2xx successful response, but Race is null!");
-                continue;
-            }
+            var race = racetimeService.getRace("ootr", lock.getRaceSlug());
             if (race.completed()) {
-                var seed = lock.getSeed();
                 log.info("Race is complete, unlocking seed {}", seed.getId());
                 seed.unlockSpoiler();
                 seedRepository.save(seed);
             }
+        } catch (RaceNotFoundException e) {
+            log.error("The race ootr/{} no longer exists, unlocking seed {}",
+                    lock.getRaceSlug(),
+                    seed.getId());
+            seed.unlockSpoiler();
+            seedRepository.save(seed);
+            lockRepository.delete(lock);
+        }
+    }
+
+    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.MINUTES)
+    public void checkUnlocks() {
+        var locks = lockRepository.findAllLockedLocks();
+        for (var lock : locks) {
+            checkUnlock(lock);
         }
     }
 }
