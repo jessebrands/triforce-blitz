@@ -19,9 +19,6 @@ public class RacetimeLock {
     @JoinColumn(name = "seed_id", referencedColumnName = "id", unique = true, nullable = false)
     private Seed seed;
 
-    @Column(name = "locked", nullable = false)
-    private boolean locked = true;
-
     protected RacetimeLock() {
         this.id = null;
     }
@@ -50,13 +47,5 @@ public class RacetimeLock {
 
     public void setSeed(Seed seed) {
         this.seed = seed;
-    }
-
-    public boolean isLocked() {
-        return locked;
-    }
-
-    public void setLocked(boolean locked) {
-        this.locked = locked;
     }
 }
