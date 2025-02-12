@@ -1,7 +1,5 @@
 package com.triforceblitz.triforceblitz.seeds;
 
-import com.triforceblitz.triforceblitz.racetime.race.RaceStatus;
-import com.triforceblitz.triforceblitz.seeds.validators.RacetimeRaceStatus;
 import com.triforceblitz.triforceblitz.seeds.validators.RacetimeRaceUrl;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.lang.Nullable;
@@ -16,7 +14,6 @@ public class GenerateSeedForm {
 
     @Nullable
     @RacetimeRaceUrl(categories = {"ootr"})
-    @RacetimeRaceStatus(statuses = {RaceStatus.INVITATIONAL, RaceStatus.OPEN})
     private URL racetimeUrl = null;
 
     public boolean isCooperative() {
@@ -46,7 +43,7 @@ public class GenerateSeedForm {
 
     public String getRaceSlug() {
         if (racetimeUrl != null) {
-            return racetimeUrl.toString().replaceFirst("^https://racetime.gg/ootr/", "");
+            return racetimeUrl.toString().replaceFirst("^https://racetime\\.gg/ootr/", "");
         }
         return null;
     }
