@@ -95,9 +95,91 @@ public class Race {
         return version;
     }
 
+    public String getSlug() {
+        return slug;
+    }
+
     public String getName() {
         return String.format("%s/%s", category.getSlug(), slug);
     }
 
+    public RaceStatus getStatus() {
+        return status;
+    }
 
+    /**
+     * Checks if the race has completed.
+     * @return True if the race status is FINISHED or CANCELLED.
+     */
+    public boolean completed() {
+        return status == RaceStatus.FINISHED || status == RaceStatus.CANCELLED;
+    }
+
+    public RaceCategory getCategory() {
+        return category;
+    }
+
+    public RaceGoal getGoal() {
+        return goal;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public boolean isRanked() {
+        return ranked;
+    }
+
+    public boolean isUnlisted() {
+        return unlisted;
+    }
+
+    public boolean isRecordable() {
+        return recordable;
+    }
+
+    public boolean isRecorded() {
+        return recorded;
+    }
+
+    public boolean isTeamRace() {
+        return teamRace;
+    }
+
+    public boolean isEvenTeamsRequired() {
+        return evenTeamsRequired;
+    }
+
+    public boolean isStreamingRequired() {
+        return streamingRequired;
+    }
+
+    public List<Entrant> getEntrants() {
+        return entrants;
+    }
+
+    public Instant getOpenedAt() {
+        return openedAt;
+    }
+
+    @Nullable
+    public Instant getStartedAt() {
+        return startedAt;
+    }
+
+    @Nullable
+    public Instant getEndedAt() {
+        return endedAt;
+    }
+
+    @Nullable
+    public Instant getCancelledAt() {
+        return cancelledAt;
+    }
+
+    @Nullable
+    public Duration getTimeLimit() {
+        return timeLimit;
+    }
 }
