@@ -41,11 +41,9 @@ public class LocalGeneratorService implements GeneratorService {
     }
 
     @Override
-    public Seed generateSeed(String version, String randomizerSeed, String preset) {
+    public void generateSeed(Seed seed) {
         var interpreter = pythonService.findInterpreter();
-        var randomizer = randomizerService.getRandomizer(version);
-        var cooperative = preset.contains("Co-op");
-        var seed = new Seed(randomizerSeed, preset, version, cooperative);
+        var randomizer = randomizerService.getRandomizer(seed.getRandomizerVersion());
         executor.submit(new GenerateSeedTask(
                 interpreter,
                 randomizer,
@@ -54,7 +52,6 @@ public class LocalGeneratorService implements GeneratorService {
                 config.getSeedStoragePath().resolve(seed.getId().toString()),
                 eventPublisher
         ));
-        return seed;
     }
 
     @EventListener

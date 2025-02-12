@@ -9,6 +9,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,7 @@ public class SeedController {
         return "seeds/generator_form";
     }
 
+    @Transactional
     @PostMapping("/generate")
     public String generateSeed(@Valid @ModelAttribute("form") GenerateSeedForm form,
                                BindingResult bindingResult,
@@ -71,8 +73,10 @@ public class SeedController {
             seedService.unlockSpoilerLog(seed.getId());
         }
         if (bindingResult.hasErrors()) {
+            seedService.deleteSeed(seed.getId());
             return "seeds/generator_form";
         }
+        seedService.generateSeed(seed.getId());
         return "redirect:/seeds/" + seed.getId();
     }
 

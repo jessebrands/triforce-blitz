@@ -1,9 +1,7 @@
 package com.triforceblitz.triforceblitz.seeds.racetime;
 
-import com.triforceblitz.triforceblitz.racetime.RacetimeClient;
 import com.triforceblitz.triforceblitz.racetime.RacetimeService;
 import com.triforceblitz.triforceblitz.racetime.errors.RaceNotFoundException;
-import com.triforceblitz.triforceblitz.racetime.race.Race;
 import com.triforceblitz.triforceblitz.seeds.SeedRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
