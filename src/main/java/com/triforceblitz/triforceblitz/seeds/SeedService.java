@@ -9,6 +9,8 @@ public interface SeedService {
 
     SeedDetails createSeed(boolean cooperative);
 
+    void generateSeed(UUID id);
+
     void lockSpoilerLog(UUID id);
 
     void unlockSpoilerLog(UUID id);
@@ -16,4 +18,6 @@ public interface SeedService {
     Path getPatchFilename(UUID id);
 
     Path getSpoilerLogFilename(UUID id);
+
+    void deleteSeed(UUID id);
 }

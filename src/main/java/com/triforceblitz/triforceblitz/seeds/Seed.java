@@ -77,13 +77,13 @@ public class Seed {
         return spoilerLocked;
     }
 
-    void lockSpoiler() {
+    public void lockSpoiler() {
         spoilerLocked = true;
     }
 
-     void unlockSpoiler() {
+    public void unlockSpoiler() {
         spoilerLocked = false;
-     }
+    }
 
     public Instant getCreatedAt() {
         return createdAt;

@@ -51,13 +51,20 @@ public class LocalSeedService implements SeedService {
         if (cooperative) {
             preset = "Triforce Blitz S4 Co-op";
         }
-        var seed = generatorService.generateSeed(
-                config.getRandomizerVersion(),
+        var seed = new Seed(
                 UUID.randomUUID().toString(),
-                preset
+                preset,
+                config.getRandomizerVersion(),
+                cooperative
         );
         seedRepository.save(seed);
         return seedToDetails(seed);
+    }
+
+    @Override
+    public void generateSeed(UUID id) {
+        seedRepository.findById(id)
+                .ifPresent(generatorService::generateSeed);
     }
 
     @Override
@@ -88,5 +95,10 @@ public class LocalSeedService implements SeedService {
         return getById(id)
                 .map(SeedDetails::getSpoilerLogFile)
                 .orElseThrow(() -> new RuntimeException("not found"));
+    }
+
+    @Override
+    public void deleteSeed(UUID id) {
+        seedRepository.deleteById(id);
     }
 }

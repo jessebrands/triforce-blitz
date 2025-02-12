@@ -1,10 +1,15 @@
 package com.triforceblitz.triforceblitz.seeds;
 
+import com.triforceblitz.triforceblitz.racetime.errors.RaceNotFoundException;
+import com.triforceblitz.triforceblitz.seeds.racetime.InvalidRaceException;
+import com.triforceblitz.triforceblitz.seeds.racetime.RacetimeLockService;
+import jakarta.validation.Valid;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +22,12 @@ import java.util.UUID;
 @RequestMapping("/seeds")
 public class SeedController {
     private final SeedService seedService;
+    private final RacetimeLockService lockService;
 
-    public SeedController(SeedService seedService) {
+    public SeedController(SeedService seedService,
+                          RacetimeLockService lockService) {
         this.seedService = seedService;
+        this.lockService = lockService;
     }
 
     @GetMapping("/generate")
@@ -28,11 +36,47 @@ public class SeedController {
         return "seeds/generator_form";
     }
 
+    @Transactional
     @PostMapping("/generate")
-    public String generateSeed(@ModelAttribute("form") GenerateSeedForm form,
+    public String generateSeed(@Valid @ModelAttribute("form") GenerateSeedForm form,
                                BindingResult bindingResult,
                                Model model) {
+        if (form.getUnlockMode() == UnlockMode.RACETIME && form.getRacetimeUrl() == null) {
+            bindingResult.rejectValue(
+                    "racetimeUrl",
+                    "seeds.generator.form.racetime-url.required"
+            );
+        }
+        if (bindingResult.hasErrors()) {
+            return "seeds/generator_form";
+        }
+
         var seed = seedService.createSeed(form.isCooperative());
+        // Set the spoiler log mode.
+        if (form.getUnlockMode() == UnlockMode.LOCKED) {
+            seedService.lockSpoilerLog(seed.getId());
+        } else if (form.getUnlockMode() == UnlockMode.RACETIME) {
+            try {
+                lockService.lockSpoilerLog(seed.getId(), "ootr", form.getRaceSlug());
+            } catch (RaceNotFoundException e) {
+                bindingResult.rejectValue(
+                        "racetimeUrl",
+                        "seeds.generator.form.racetime-url.not-found"
+                );
+            } catch (InvalidRaceException e) {
+                bindingResult.rejectValue(
+                        "racetimeUrl",
+                        "seeds.generator.form.racetime-url.not-valid"
+                );
+            }
+        } else {
+            seedService.unlockSpoilerLog(seed.getId());
+        }
+        if (bindingResult.hasErrors()) {
+            seedService.deleteSeed(seed.getId());
+            return "seeds/generator_form";
+        }
+        seedService.generateSeed(seed.getId());
         return "redirect:/seeds/" + seed.getId();
     }
 

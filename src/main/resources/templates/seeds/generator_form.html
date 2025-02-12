@@ -4,15 +4,81 @@
 <head>
     <meta charset="UTF-8">
     <title>Generate a Seed</title>
+
+    <style>
+        #racetime-url-container {
+            display: none;
+        }
+
+        #racetime-url-container:where(:has(:user-invalid)) {
+            display: block;
+        }
+
+        #opt-spoiler-racetime:checked ~ #racetime-url-container {
+            display: block;
+        }
+    </style>
 </head>
 <body>
 <main>
     <form method="post" th:action="@{/seeds/generate}" th:object="${form}">
         <h1>Generate a Triforce Blitz seed</h1>
-        <div>
-            <input type="checkbox" id="cooperative-checkbox" th:field="*{cooperative}" />
-            <label for="cooperative-checkbox">Generate a co-op seed</label>
-        </div>
+        <fieldset>
+            <legend>Generator settings</legend>
+            <div>
+                <input type="checkbox" id="cooperative-checkbox" th:field="*{cooperative}"/>
+                <label for="cooperative-checkbox">Generate a co-op seed</label>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Spoiler log settings</legend>
+            <div>
+                <ul th:if="${#fields.hasErrors('unlockMode')}">
+                    <li th:errors="*{unlockMode}">Error message</li>
+                </ul>
+                <div>
+                    <input type="radio" id="opt-spoiler-unlocked" required
+                           th:field="*{unlockMode}"
+                           th:value="${T(com.triforceblitz.triforceblitz.seeds.UnlockMode).UNLOCKED}"/>
+                    <label for="opt-spoiler-unlocked">The spoiler log is unlocked and can be viewed.</label>
+                </div>
+
+                <div>
+                    <input type="radio" id="opt-spoiler-locked" required
+                           th:field="*{unlockMode}"
+                           th:value="${T(com.triforceblitz.triforceblitz.seeds.UnlockMode).LOCKED}"/>
+                    <label for="opt-spoiler-locked">The spoiler log is locked and cannot be viewed.</label>
+                </div>
+
+                <div>
+                    <input type="radio" id="opt-spoiler-racetime" required
+                           th:field="*{unlockMode}"
+                           th:value="${T(com.triforceblitz.triforceblitz.seeds.UnlockMode).RACETIME}"/>
+                    <label for="opt-spoiler-racetime">
+                        The spoiler log is locked and will automatically unlock when a Racetime.gg race completes.
+                    </label>
+
+                    <div id="racetime-url-container">
+                        <ul th:if="${#fields.hasErrors('racetimeUrl')}">
+                            <li th:errors="*{racetimeUrl}">Error message</li>
+                        </ul>
+
+                        <label for="racetime-url-input">Racetime.gg race URL</label>
+                        <input type="url" id="racetime-url-input"
+
+                               th:field="*{racetimeUrl}"
+                               th:value="${T(com.triforceblitz.triforceblitz.seeds.UnlockMode).RACETIME}"/>
+
+                        <div>
+                            Must be a valid
+                            <a href="https://racetime.gg">Racetime.gg</a> race URL, for example:
+                            <kbd>https://racetime.gg/ootr/example-race-1234</kbd>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
 
         <div>
             <button type="submit">Generate seed</button>
