@@ -120,6 +120,14 @@ public class Race {
         return status == RaceStatus.FINISHED || status == RaceStatus.CANCELLED;
     }
 
+    /**
+     * Checks if the race is in an open state.
+     * @return True if the race states is OPEN or INVITATIONAL.
+     */
+    public boolean isOpen() {
+        return status == RaceStatus.OPEN || status == RaceStatus.INVITATIONAL;
+    }
+
     public RaceCategory getCategory() {
         return category;
     }

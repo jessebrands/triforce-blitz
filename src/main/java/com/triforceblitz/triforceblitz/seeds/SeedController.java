@@ -1,5 +1,7 @@
 package com.triforceblitz.triforceblitz.seeds;
 
+import com.triforceblitz.triforceblitz.racetime.errors.RaceNotFoundException;
+import com.triforceblitz.triforceblitz.seeds.racetime.InvalidRaceException;
 import com.triforceblitz.triforceblitz.seeds.racetime.RacetimeLockService;
 import jakarta.validation.Valid;
 import org.springframework.core.io.ByteArrayResource;
@@ -38,7 +40,10 @@ public class SeedController {
                                BindingResult bindingResult,
                                Model model) {
         if (form.getUnlockMode() == UnlockMode.RACETIME && form.getRacetimeUrl() == null) {
-            bindingResult.rejectValue("racetimeUrl", "seeds.generator.form.racetime-url.empty");
+            bindingResult.rejectValue(
+                    "racetimeUrl",
+                    "seeds.generator.form.racetime-url.required"
+            );
         }
         if (bindingResult.hasErrors()) {
             return "seeds/generator_form";
@@ -49,9 +54,24 @@ public class SeedController {
         if (form.getUnlockMode() == UnlockMode.LOCKED) {
             seedService.lockSpoilerLog(seed.getId());
         } else if (form.getUnlockMode() == UnlockMode.RACETIME) {
-            lockService.lockSpoilerLog(seed.getId(), "ootr", form.getRaceSlug());
+            try {
+                lockService.lockSpoilerLog(seed.getId(), "ootr", form.getRaceSlug());
+            } catch (RaceNotFoundException e) {
+                bindingResult.rejectValue(
+                        "racetimeUrl",
+                        "seeds.generator.form.racetime-url.not-found"
+                );
+            } catch (InvalidRaceException e) {
+                bindingResult.rejectValue(
+                        "racetimeUrl",
+                        "seeds.generator.form.racetime-url.not-valid"
+                );
+            }
         } else {
             seedService.unlockSpoilerLog(seed.getId());
+        }
+        if (bindingResult.hasErrors()) {
+            return "seeds/generator_form";
         }
         return "redirect:/seeds/" + seed.getId();
     }

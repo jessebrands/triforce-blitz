@@ -31,12 +31,17 @@ public class RacetimeLockService {
     }
 
     @Transactional
-    public void lockSpoilerLog(UUID id, String category, String raceSlug) {
+    public void lockSpoilerLog(UUID id, String category, String raceSlug)
+            throws RaceNotFoundException, InvalidRaceException {
+        var race = racetimeService.getRace(category, raceSlug);
+        if (!race.isOpen()) {
+            throw new InvalidRaceException("the race is not open");
+        }
         var seed = seedRepository.findById(id).orElseThrow();
-        var lock = new RacetimeLock(raceSlug, seed);
-        seed.lockSpoiler();
-        seedRepository.save(seed);
-        lockRepository.save(lock);
+            var lock = new RacetimeLock(raceSlug, seed);
+            seed.lockSpoiler();
+            seedRepository.save(seed);
+            lockRepository.save(lock);
     }
 
     private void checkUnlock(RacetimeLock lock) {
