@@ -1,6 +1,7 @@
 package com.triforceblitz.triforceblitz.seeds;
 
 import com.triforceblitz.triforceblitz.seeds.racetime.RacetimeLockService;
+import jakarta.validation.Valid;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -33,11 +34,13 @@ public class SeedController {
     }
 
     @PostMapping("/generate")
-    public String generateSeed(@ModelAttribute("form") GenerateSeedForm form,
+    public String generateSeed(@Valid @ModelAttribute("form") GenerateSeedForm form,
                                BindingResult bindingResult,
                                Model model) {
         if (form.getUnlockMode() == UnlockMode.RACETIME && form.getRacetimeUrl() == null) {
             bindingResult.rejectValue("racetimeUrl", "seeds.generator.form.racetime-url.empty");
+        }
+        if (bindingResult.hasErrors()) {
             return "seeds/generator_form";
         }
 

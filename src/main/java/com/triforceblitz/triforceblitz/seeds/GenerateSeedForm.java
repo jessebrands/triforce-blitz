@@ -1,14 +1,19 @@
 package com.triforceblitz.triforceblitz.seeds;
 
+import com.triforceblitz.triforceblitz.seeds.validators.RacetimeRaceUrl;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.lang.Nullable;
 
 import java.net.URL;
 
 public class GenerateSeedForm {
     private boolean cooperative = false;
+
+    @NotNull
     private UnlockMode unlockMode = UnlockMode.UNLOCKED;
 
     @Nullable
+    @RacetimeRaceUrl(categories = {"ootr"})
     private URL racetimeUrl = null;
 
     public boolean isCooperative() {

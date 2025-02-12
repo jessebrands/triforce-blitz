@@ -6,11 +6,16 @@ import org.springframework.lang.Nullable;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * A Racetime.gg race.
  */
 public class Race {
+    public static final Pattern VALID_PATTERN = Pattern.compile(
+            "^https?://racetime\\.gg/([a-z][a-z0-9]+)/([a-z]+-[a-z]+-[0-9]{4})$"
+    );
+
     /// Version of the data, incremented with each change.
     @JsonProperty("version")
     private int version;
