@@ -33,6 +33,14 @@ public class SeedController {
                                BindingResult bindingResult,
                                Model model) {
         var seed = seedService.createSeed(form.isCooperative());
+        // Set the spoiler log mode.
+        if (form.getUnlockMode() == UnlockMode.LOCKED) {
+            seedService.lockSpoilerLog(seed.getId());
+        } else if (form.getUnlockMode() == UnlockMode.RACETIME) {
+            // Normally, throw an error here.
+        } else {
+            seedService.unlockSpoilerLog(seed.getId());
+        }
         return "redirect:/seeds/" + seed.getId();
     }
 
