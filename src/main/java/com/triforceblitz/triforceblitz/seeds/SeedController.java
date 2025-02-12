@@ -1,5 +1,6 @@
 package com.triforceblitz.triforceblitz.seeds;
 
+import com.triforceblitz.triforceblitz.seeds.racetime.RacetimeLockService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -17,9 +18,12 @@ import java.util.UUID;
 @RequestMapping("/seeds")
 public class SeedController {
     private final SeedService seedService;
+    private final RacetimeLockService lockService;
 
-    public SeedController(SeedService seedService) {
+    public SeedController(SeedService seedService,
+                          RacetimeLockService lockService) {
         this.seedService = seedService;
+        this.lockService = lockService;
     }
 
     @GetMapping("/generate")
@@ -32,12 +36,17 @@ public class SeedController {
     public String generateSeed(@ModelAttribute("form") GenerateSeedForm form,
                                BindingResult bindingResult,
                                Model model) {
+        if (form.getUnlockMode() == UnlockMode.RACETIME && form.getRacetimeUrl() == null) {
+            bindingResult.rejectValue("racetimeUrl", "seeds.generator.form.racetime-url.empty");
+            return "seeds/generator_form";
+        }
+
         var seed = seedService.createSeed(form.isCooperative());
         // Set the spoiler log mode.
         if (form.getUnlockMode() == UnlockMode.LOCKED) {
             seedService.lockSpoilerLog(seed.getId());
         } else if (form.getUnlockMode() == UnlockMode.RACETIME) {
-            // Normally, throw an error here.
+            lockService.lockSpoilerLog(seed.getId(), "ootr", form.getRaceSlug());
         } else {
             seedService.unlockSpoilerLog(seed.getId());
         }

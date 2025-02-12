@@ -35,4 +35,11 @@ public class GenerateSeedForm {
     public void setRacetimeUrl(@Nullable URL racetimeUrl) {
         this.racetimeUrl = racetimeUrl;
     }
+
+    public String getRaceSlug() {
+        if (racetimeUrl != null) {
+            return racetimeUrl.toString().replaceFirst("^https://racetime.gg/ootr/", "");
+        }
+        return null;
+    }
 }
