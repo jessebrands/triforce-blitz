@@ -36,7 +36,7 @@ public class ScheduledFeaturedSeedService implements FeaturedSeedService {
         }
         // First of all, we generate the seed.
         var seed = seedService.createSeed(true);
-        if (today.getDayOfWeek().equals(DayOfWeek.THURSDAY)) {
+        if (today.getDayOfWeek().equals(DayOfWeek.FRIDAY)) {
             log.info("Generating Seed of the Week for {}", today);
             createWeeklySeed(seed.getId());
         } else {
