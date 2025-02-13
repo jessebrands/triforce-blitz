@@ -34,3 +34,19 @@ create table racetime_locks
         on delete cascade on update cascade,
     constraint racetime_locks_uk_race unique (race_slug)
 );
+
+
+--changeset jessebrands:0001_create_featured_seeds
+create table featured_seeds
+(
+    id       uuid      not null default uuid_generate_v4(),
+    seed_id  uuid      not null,
+    daily    boolean   not null default false,
+    weekly   boolean   not null default false,
+    date     date      not null default now(),
+    added_at timestamp not null default now(),
+    constraint featured_seeds_pk primary key (id),
+    constraint featured_seeds_fk_seed foreign key (seed_id) references seeds (id)
+        on delete cascade on update cascade,
+    constraint featured_seeds_uk_seed unique (seed_id)
+);

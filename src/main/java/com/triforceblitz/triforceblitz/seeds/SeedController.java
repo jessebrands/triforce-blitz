@@ -22,11 +22,14 @@ import java.util.UUID;
 public class SeedController {
     private final SeedService seedService;
     private final RacetimeLockService lockService;
+    private final FeaturedSeedService featuredSeedService;
 
     public SeedController(SeedService seedService,
-                          RacetimeLockService lockService) {
+                          RacetimeLockService lockService,
+                          FeaturedSeedService featuredSeedService) {
         this.seedService = seedService;
         this.lockService = lockService;
+        this.featuredSeedService = featuredSeedService;
     }
 
     @GetMapping("/generate")
@@ -102,5 +105,12 @@ public class SeedController {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(resource);
+    }
+
+    @GetMapping("/featured")
+    public String featuredSeeds(Model model) {
+        model.addAttribute("dailySeed", featuredSeedService.getDailySeed());
+        model.addAttribute("weeklySeed", featuredSeedService.getWeeklySeed());
+        return "seeds/featured_seeds";
     }
 }

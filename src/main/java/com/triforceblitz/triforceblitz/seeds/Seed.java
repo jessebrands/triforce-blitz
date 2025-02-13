@@ -46,6 +46,10 @@ public class Seed {
     @OneToOne(mappedBy = "seed", cascade = CascadeType.ALL)
     private RacetimeLock racetimeLock;
 
+    @Nullable
+    @OneToOne(mappedBy = "seed", cascade = CascadeType.ALL)
+    private FeaturedSeed featuredSeed;
+
     protected Seed() {
         this.id = UUID.randomUUID();
     }
@@ -102,5 +106,14 @@ public class Seed {
 
     public void setRacetimeLock(@Nullable RacetimeLock racetimeLock) {
         this.racetimeLock = racetimeLock;
+    }
+
+    @Nullable
+    public FeaturedSeed getFeaturedSeed() {
+        return featuredSeed;
+    }
+
+    public boolean isFeatured() {
+        return featuredSeed != null;
     }
 }
