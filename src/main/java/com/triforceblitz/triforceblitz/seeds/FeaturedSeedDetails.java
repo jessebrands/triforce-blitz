@@ -13,7 +13,7 @@ public record FeaturedSeedDetails(
         boolean cooperative,
         boolean spoilerLocked
 ) {
-    public FeaturedSeedDetails from(FeaturedSeed featuredSeed) {
+    public static FeaturedSeedDetails from(FeaturedSeed featuredSeed) {
         return new FeaturedSeedDetails(
                 featuredSeed.getSeed().getId(),
                 featuredSeed.getDate(),

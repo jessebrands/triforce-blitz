@@ -2,6 +2,7 @@ package com.triforceblitz.triforceblitz.seeds;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,6 +58,22 @@ public class ScheduledFeaturedSeedService implements FeaturedSeedService {
             seedService.unlockSpoilerLog(seed.getId());
             log.info("Unlocked spoiler log for Seed of the Day {}", daily.getDate());
         }
+    }
+
+    @Nullable
+    @Override
+    public FeaturedSeedDetails getDailySeed() {
+        return featuredSeedRepository.findLatestDailySeed()
+                .map(FeaturedSeedDetails::from)
+                .orElse(null);
+    }
+
+    @Nullable
+    @Override
+    public FeaturedSeedDetails getWeeklySeed() {
+        return featuredSeedRepository.findLatestWeeklySeed()
+                .map(FeaturedSeedDetails::from)
+                .orElse(null);
     }
 
     @Override
