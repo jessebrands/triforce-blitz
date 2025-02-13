@@ -2,6 +2,8 @@ package com.triforceblitz.triforceblitz.seeds;
 
 import com.triforceblitz.triforceblitz.TriforceBlitzConfig;
 import com.triforceblitz.triforceblitz.seeds.generator.GeneratorService;
+import com.triforceblitz.triforceblitz.seeds.racetime.RacetimeLock;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
@@ -31,8 +33,17 @@ public class LocalSeedService implements SeedService {
                 seed.isCooperative(),
                 seed.isSpoilerLocked(),
                 seed.getCreatedAt(),
-                getSeedLocation(seed.getId())
+                getSeedLocation(seed.getId()),
+                mapRacetimeLockToSlug(seed.getRacetimeLock())
         );
+    }
+
+    @Nullable
+    private String mapRacetimeLockToSlug(@Nullable RacetimeLock racetimeLock) {
+        if (racetimeLock == null) {
+            return null;
+        }
+        return racetimeLock.getRaceSlug();
     }
 
     private Path getSeedLocation(UUID id) {

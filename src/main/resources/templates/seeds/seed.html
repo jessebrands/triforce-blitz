@@ -51,12 +51,28 @@
                 <a href="https://ootrandomizer.com">OoTRandomizer.com</a>.</p>
         </div>
 
-        <div th:if="${!seed.spoilerLocked}">
+        <div th:if="${seed.spoilerLocked}">
+            <button type="button" disabled>Download spoiler log</button>
+
+            <p th:if="${seed.racetimeSlug}">This spoiler log is locked with a
+                <a th:href="@{https://racetime.gg/ootr/{slug}(slug=${seed.racetimeSlug})}">Racetime.gg race</a>!
+                Once the race <strong th:text="${seed.racetimeSlug}">race-slug-1234</strong> finishes, the spoiler
+                log will automatically unlock.
+            </p>
+            <p th:unless="${seed.racetimeSlug}">The spoiler log for this seed is locked and cannot be accessed.</p>
+        </div>
+        <div th:unless="${seed.spoilerLocked}">
             <a th:href="@{/seeds/{id}/spoiler(id=${seed.id})}">
                 <button type="button">Download spoiler log</button>
             </a>
+
             <p>The spoiler log contains all information about the generated seed. You can use this file to find out
                 where items are located, as well as see how the randomizer logically solved the seed.</p>
+            <p th:if="${seed.racetimeSlug}">
+                This seed was locked with a
+                <a th:href="@{https://racetime.gg/ootr/{slug}(slug=${seed.racetimeSlug})}">Racetime.gg race</a>,
+                but the race has concluded or has been cancelled and the spoiler log is now unlocked.
+            </p>
         </div>
     </section>
 

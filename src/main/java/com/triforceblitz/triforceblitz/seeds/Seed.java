@@ -1,7 +1,9 @@
 package com.triforceblitz.triforceblitz.seeds;
 
+import com.triforceblitz.triforceblitz.seeds.racetime.RacetimeLock;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.lang.Nullable;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -39,6 +41,10 @@ public class Seed {
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
+
+    @Nullable
+    @OneToOne(mappedBy = "seed", cascade = CascadeType.ALL)
+    private RacetimeLock racetimeLock;
 
     protected Seed() {
         this.id = UUID.randomUUID();
@@ -87,5 +93,14 @@ public class Seed {
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    @Nullable
+    public RacetimeLock getRacetimeLock() {
+        return racetimeLock;
+    }
+
+    public void setRacetimeLock(@Nullable RacetimeLock racetimeLock) {
+        this.racetimeLock = racetimeLock;
     }
 }

@@ -16,6 +16,7 @@ public class SeedDetails {
     private final boolean spoilerLocked;
     private final Instant createdAt;
     private final Path location;
+    private final String racetimeSlug;
 
     public SeedDetails(
             UUID id,
@@ -25,7 +26,8 @@ public class SeedDetails {
             boolean cooperative,
             boolean spoilerLocked,
             Instant createdAt,
-            Path location
+            Path location,
+            String racetimeSlug
     ) {
         this.id = id;
         this.seed = seed;
@@ -35,6 +37,7 @@ public class SeedDetails {
         this.spoilerLocked = spoilerLocked;
         this.createdAt = createdAt;
         this.location = location;
+        this.racetimeSlug = racetimeSlug;
     }
 
     public UUID getId() {
@@ -89,5 +92,9 @@ public class SeedDetails {
         var attrs = Files.readAttributes(getPatchFile(), BasicFileAttributes.class);
         var creationTime = attrs.creationTime();
         return creationTime.toInstant();
+    }
+
+    public String getRacetimeSlug() {
+        return racetimeSlug;
     }
 }
