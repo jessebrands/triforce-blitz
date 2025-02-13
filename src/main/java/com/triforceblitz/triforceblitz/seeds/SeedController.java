@@ -9,7 +9,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +49,7 @@ public class SeedController {
             return "seeds/generator_form";
         }
 
-        var seed = seedService.createSeed(form.isCooperative());
+        var seed = seedService.createSeed(true);
         // Set the spoiler log mode.
         if (form.getUnlockMode() == UnlockMode.LOCKED) {
             seedService.lockSpoilerLog(seed.getId());

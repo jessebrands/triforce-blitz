@@ -7,7 +7,7 @@ import org.springframework.lang.Nullable;
 import java.net.URL;
 
 public class GenerateSeedForm {
-    private boolean cooperative = false;
+    private boolean cooperative = true;
 
     @NotNull
     private UnlockMode unlockMode = UnlockMode.UNLOCKED;

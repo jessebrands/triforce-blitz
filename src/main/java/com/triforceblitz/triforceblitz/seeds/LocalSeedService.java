@@ -59,9 +59,6 @@ public class LocalSeedService implements SeedService {
     @Override
     public SeedDetails createSeed(boolean cooperative) {
         var preset = config.getRandomizerPreset();
-        if (cooperative) {
-            preset = "Triforce Blitz S4 Co-op";
-        }
         var seed = new Seed(
                 UUID.randomUUID().toString(),
                 preset,
