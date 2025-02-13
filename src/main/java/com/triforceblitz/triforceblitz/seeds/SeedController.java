@@ -36,7 +36,6 @@ public class SeedController {
         return "seeds/generator_form";
     }
 
-    @Transactional
     @PostMapping("/generate")
     public String generateSeed(@Valid @ModelAttribute("form") GenerateSeedForm form,
                                BindingResult bindingResult,
