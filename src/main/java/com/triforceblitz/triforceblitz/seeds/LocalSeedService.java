@@ -1,11 +1,14 @@
 package com.triforceblitz.triforceblitz.seeds;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.triforceblitz.triforceblitz.TriforceBlitzConfig;
 import com.triforceblitz.triforceblitz.seeds.generator.GeneratorService;
 import com.triforceblitz.triforceblitz.seeds.racetime.RacetimeLock;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.UUID;
@@ -105,6 +108,19 @@ public class LocalSeedService implements SeedService {
             throw new RuntimeException("the spoiler log is locked");
         }
         return seed.getSpoilerLogFile();
+    }
+
+    @Override
+    public SpoilerLog getSpoilerLog(UUID id) {
+        try {
+            var file = getById(id)
+                    .map(SeedDetails::getSpoilerLogFile)
+                    .map(Path::toFile)
+                    .orElseThrow();
+            return new ObjectMapper().readValue(file, SpoilerLog.class);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     @Override
