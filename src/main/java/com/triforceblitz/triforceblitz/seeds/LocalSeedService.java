@@ -92,9 +92,11 @@ public class LocalSeedService implements SeedService {
 
     @Override
     public Path getSpoilerLogFilename(UUID id) {
-        return getById(id)
-                .map(SeedDetails::getSpoilerLogFile)
-                .orElseThrow(() -> new RuntimeException("not found"));
+        var seed = getById(id).orElseThrow(() -> new RuntimeException("not found"));
+        if (seed.isSpoilerLocked()) {
+            throw new RuntimeException("the spoiler log is locked");
+        }
+        return seed.getSpoilerLogFile();
     }
 
     @Override
