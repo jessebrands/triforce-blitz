@@ -57,11 +57,29 @@ public class LocalGeneratorService implements GeneratorService {
     @EventListener
     public void onGeneratorLogEvent(GeneratorLogEvent event) {
         var seed = event.getSeed();
+        var message = event.getMessage();
+        // Filter out unwanted messages!
+        if (message.contains(" Seed: ")) {
+            return;
+        }
+        else if (message.contains("sphere")) {
+            return;
+        }
+        else if (message.contains("Creating Patch File")) {
+            message = "Creating patch file.";
+        }
+        else if (message.contains("Creating Patch Archive")) {
+            message = "Creating multi-world patch archive.";
+        } else if (message.contains("Created patch file archive")) {
+            return;
+        } else if (message.contains("Created spoiler log")) {
+            return;
+        }
         messagingTemplate.convertAndSend(
                 "/topic/seed/" + seed.getId() + "/generator/log",
                 Map.of(
                         "timestamp", Instant.ofEpochMilli(event.getTimestamp()),
-                        "message", event.getMessage()
+                        "message", message
                 )
         );
     }
