@@ -55,10 +55,10 @@ public class SeedController {
         var seed = seedService.createSeed(true);
         // Set the spoiler log mode.
         if (form.getUnlockMode() == UnlockMode.LOCKED) {
-            seedService.lockSpoilerLog(seed.getId());
+            seedService.lockSpoilerLog(seed.id());
         } else if (form.getUnlockMode() == UnlockMode.RACETIME) {
             try {
-                lockService.lockSpoilerLog(seed.getId(), "ootr", form.getRaceSlug());
+                lockService.lockSpoilerLog(seed.id(), "ootr", form.getRaceSlug());
             } catch (RaceNotFoundException e) {
                 bindingResult.rejectValue(
                         "racetimeUrl",
@@ -71,14 +71,14 @@ public class SeedController {
                 );
             }
         } else {
-            seedService.unlockSpoilerLog(seed.getId());
+            seedService.unlockSpoilerLog(seed.id());
         }
         if (bindingResult.hasErrors()) {
-            seedService.deleteSeed(seed.getId());
+            seedService.deleteSeed(seed.id());
             return "seeds/generator_form";
         }
-        seedService.generateSeed(seed.getId());
-        return "redirect:/seeds/" + seed.getId();
+        seedService.generateSeed(seed.id());
+        return "redirect:/seeds/" + seed.id();
     }
 
     @GetMapping("/{id}")

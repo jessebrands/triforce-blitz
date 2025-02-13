@@ -104,7 +104,7 @@ public class LocalSeedService implements SeedService {
     @Override
     public Path getSpoilerLogFilename(UUID id) {
         var seed = getById(id).orElseThrow(() -> new RuntimeException("not found"));
-        if (seed.isSpoilerLocked()) {
+        if (seed.spoilerLocked()) {
             throw new RuntimeException("the spoiler log is locked");
         }
         return seed.getSpoilerLogFile();

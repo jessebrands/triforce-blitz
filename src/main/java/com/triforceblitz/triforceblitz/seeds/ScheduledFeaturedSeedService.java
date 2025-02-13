@@ -39,13 +39,13 @@ public class ScheduledFeaturedSeedService implements FeaturedSeedService {
         var seed = seedService.createSeed(true);
         if (today.getDayOfWeek().equals(DayOfWeek.FRIDAY)) {
             log.info("Generating Seed of the Week for {}", today);
-            createWeeklySeed(seed.getId());
+            createWeeklySeed(seed.id());
         } else {
             log.info("Generating Seed of the Day for {}", today);
-            createDailySeed(seed.getId());
+            createDailySeed(seed.id());
         }
-        seedService.lockSpoilerLog(seed.getId());
-        seedService.generateSeed(seed.getId());
+        seedService.lockSpoilerLog(seed.id());
+        seedService.generateSeed(seed.id());
     }
 
     @Transactional
