@@ -17,6 +17,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/websocket");
+        registry.addEndpoint("/websocket")
+                .setAllowedOriginPatterns(
+                        "http://localhost:[*]",
+                        "https://localhost:[*]",
+                        "http://*.triforceblitz.com:[*]",
+                        "https://*.triforceblitz.com:[*]"
+                );
     }
 }
