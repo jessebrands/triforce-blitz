@@ -1,7 +1,9 @@
 package com.triforceblitz.triforceblitz.seeds;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -24,6 +26,10 @@ public class FeaturedSeed {
 
     @Column(name = "date", nullable = false)
     private LocalDate date = LocalDate.now();
+
+    @CreationTimestamp
+    @Column(name = "added_at", nullable = false)
+    private Instant addedAt = Instant.now();
 
     protected FeaturedSeed() {
         this.id = null;
@@ -75,5 +81,13 @@ public class FeaturedSeed {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public Instant getAddedAt() {
+        return addedAt;
+    }
+
+    public void setAddedAt(Instant addedAt) {
+        this.addedAt = addedAt;
     }
 }
