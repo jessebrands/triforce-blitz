@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <title>Featured Seeds</title>
+</head>
+<body>
+<main>
+    <h1>Featured Seeds</h1>
+
+    <section id="section-seed-of-the-day">
+        <h2>Co-op Seed of the Day</h2>
+        <div th:if="${dailySeed}">
+            <h3 th:text="${#temporals.format(dailySeed.date)}"></h3>
+            <a th:href="@{/seeds/{id}/patch(id=${dailySeed.id})}">
+                <button type="button">Download patch</button></a>
+            <a th:href="@{/seeds/{id}(id=${dailySeed.id})}">
+                <button type="button">View seed details</button></a>
+        </div>
+        <div th:unless="${dailySeed}">There is no Seed of the Day yet.</div>
+        <p><em>The Seed of the Day is rolled every day at 19:00 UTC.</em></p>
+    </section>
+
+    <section id="section-seed-of-the-week">
+        <h2>Co-op Seed of the Week</h2>
+        <div th:if="${weeklySeed}">
+            <h3 th:text="${'Week of ' + #temporals.format(weeklySeed.date)}"></h3>
+            <a th:href="@{/seeds/{id}/patch(id=${weeklySeed.id})}">
+                <button type="button">Download patch</button></a>
+            <a th:href="@{/seeds/{id}(id=${weeklySeed.id})}">
+                <button type="button">View seed details</button></a>
+        </div>
+        <div th:unless="${weeklySeed}">
+            There is no weekly seed yet, the Seed of the Week is rolled every Friday at 19:00 UTC.
+            Please check back here soon.
+        </div>
+        <p><em>The Seed of the Week is rolled every Friday at 19:00 UTC.</em></p>
+    </section>
+</main>
+</body>
+</html>
