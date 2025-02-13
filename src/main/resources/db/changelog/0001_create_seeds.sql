@@ -57,3 +57,7 @@ add constraint featured_seeds_uk_date_daily unique (date, daily);
 --changeset jesse_brands:0001_featured_seeds_add_column_added_at
 alter table featured_seeds
 add column added_at timestamp not null default now();
+
+--changeset jesse_brands:0001_featured_seeds_remote_unique_daily_date
+alter table featured_seeds
+drop constraint featured_seeds_uk_date_daily;
