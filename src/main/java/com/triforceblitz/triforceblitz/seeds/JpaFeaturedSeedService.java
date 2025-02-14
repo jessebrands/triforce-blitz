@@ -1,5 +1,7 @@
 package com.triforceblitz.triforceblitz.seeds;
 
+import com.triforceblitz.triforceblitz.seeds.generator.GeneratorService;
+import com.triforceblitz.triforceblitz.seeds.spoiler.SpoilerLogManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
@@ -12,40 +14,46 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
-public class ScheduledFeaturedSeedService implements FeaturedSeedService {
-    private static final Logger log = LoggerFactory.getLogger(ScheduledFeaturedSeedService.class);
+public class JpaFeaturedSeedService implements FeaturedSeedService {
+    private static final Logger log = LoggerFactory.getLogger(JpaFeaturedSeedService.class);
 
-    private final SeedService seedService;
+    private final SeedDetailsManager seedManager;
+    private final GeneratorService generatorService;
+    private final SpoilerLogManager spoilerLogManager;
     private final SeedRepository seedRepository;
     private final FeaturedSeedRepository featuredSeedRepository;
 
-    public ScheduledFeaturedSeedService(SeedService seedService,
-                                        SeedRepository seedRepository,
-                                        FeaturedSeedRepository featuredSeedRepository) {
-        this.seedService = seedService;
+    public JpaFeaturedSeedService(SeedDetailsManager seedManager,
+                                  GeneratorService generatorService,
+                                  SpoilerLogManager spoilerLogManager,
+                                  SeedRepository seedRepository,
+                                  FeaturedSeedRepository featuredSeedRepository) {
+        this.seedManager = seedManager;
+        this.generatorService = generatorService;
+        this.spoilerLogManager = spoilerLogManager;
         this.seedRepository = seedRepository;
         this.featuredSeedRepository = featuredSeedRepository;
     }
 
     @Transactional
     @Scheduled(cron = "0 0 19 * * *")
-    public void generateSeedOfTheDay() {
+    public void generateSeedOfTheDay() throws Exception {
         var today = LocalDate.now();
         if (featuredSeedRepository.existsByDateAndDaily(today, true)) {
             log.warn("Seed of the Day for {} already exists, skipping!", today);
             return;
         }
         // First of all, we generate the seed.
-        var seed = seedService.createSeed(true);
+        var seed = seedManager.createSeed(true);
         if (today.getDayOfWeek().equals(DayOfWeek.FRIDAY)) {
             log.info("Generating Seed of the Week for {}", today);
-            createWeeklySeed(seed.id());
+            createWeeklySeed(seed.getId());
         } else {
             log.info("Generating Seed of the Day for {}", today);
-            createDailySeed(seed.id());
+            createDailySeed(seed.getId());
         }
-        seedService.lockSpoilerLog(seed.id());
-        seedService.generateSeed(seed.id());
+        spoilerLogManager.lockSpoilerLog(seed.getId());
+        generatorService.generateSeed(seed.getId());
     }
 
     @Transactional
@@ -55,7 +63,7 @@ public class ScheduledFeaturedSeedService implements FeaturedSeedService {
         var previousDailies = featuredSeedRepository.findAllLockedPreviousDailySeeds();
         for (var daily : previousDailies) {
             var seed = daily.getSeed();
-            seedService.unlockSpoilerLog(seed.getId());
+            spoilerLogManager.unlockSpoilerLog(seed.getId());
             log.info("Unlocked spoiler log for Seed of the Day {}", daily.getDate());
         }
     }

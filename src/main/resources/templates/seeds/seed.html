@@ -3,6 +3,8 @@
       xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
     <title th:text="${'Seed ' + seed.id}">Seed</title>
     <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
 
@@ -38,7 +40,7 @@
     </style>
 </head>
 <body>
-<main th:if="${seed.generated}">
+<main th:if="${generatedSeed}">
     <h1>Play Triforce Blitz</h1>
 
     <section>
@@ -54,12 +56,17 @@
         <div th:if="${seed.spoilerLocked}">
             <button type="button" disabled>Download spoiler log</button>
 
-            <p th:if="${seed.racetimeSlug}">This spoiler log is locked with a
-                <a th:href="@{https://racetime.gg/ootr/{slug}(slug=${seed.racetimeSlug})}">Racetime.gg race</a>!
-                Once the race <strong th:text="${seed.racetimeSlug}">race-slug-1234</strong> finishes, the spoiler
+            <p th:if="${racetimeLock}" th:with="lock=${racetimeLock}">
+                This spoiler log is locked with a
+                <a th:with="slug=${lock.getRaceName()},category=${lock.getRaceCategory()}"
+                   th:href="@{https://racetime.gg/{category}/{slug}(category=${category},slug=${slug})}">
+                    Racetime.gg race</a>!
+                Once the race
+                <strong th:text="${lock.raceCategory + '/' + lock.raceName}">race-slug-1234</strong>
+                finishes, the spoiler
                 log will automatically unlock.
             </p>
-            <p th:unless="${seed.racetimeSlug}">The spoiler log for this seed is locked and cannot be accessed.</p>
+            <p th:unless="${racetimeLock}">The spoiler log for this seed is locked and cannot be accessed.</p>
         </div>
         <div th:unless="${seed.spoilerLocked}">
             <a th:href="@{/seeds/{id}/spoiler(id=${seed.id})}">
@@ -68,9 +75,11 @@
 
             <p>The spoiler log contains all information about the generated seed. You can use this file to find out
                 where items are located, as well as see how the randomizer logically solved the seed.</p>
-            <p th:if="${seed.racetimeSlug}">
+            <p th:if="${racetimeLock}" th:with="lock=${racetimeLock}">
                 This seed was locked with a
-                <a th:href="@{https://racetime.gg/ootr/{slug}(slug=${seed.racetimeSlug})}">Racetime.gg race</a>,
+                <a th:with="slug=${lock.getRaceName()},category=${lock.getRaceCategory()}"
+                   th:href="@{https://racetime.gg/{category}/{slug}(category=${category},slug=${slug})}">
+                    Racetime.gg race</a>,
                 but the race has concluded or has been cancelled and the spoiler log is now unlocked.
             </p>
         </div>
@@ -100,16 +109,16 @@
                 <th scope="row">Created at</th>
                 <td th:text="${#temporals.format(seed.createdAt)}"></td>
             </tr>
-            <tr th:if="${seed.generated}">
+            <tr th:if="${generatedSeed}">
                 <th scope="row">Generated at</th>
-                <td th:text="${#temporals.format(seed.generatedAt)}"></td>
+                <td th:text="${#temporals.format(generatedSeed.generatedAt)}"></td>
             </tr>
             </tbody>
         </table>
     </section>
 </main>
 
-<main th:unless="${seed.generated}">
+<main th:unless="${generatedSeed}">
     <h1>Your seed is almost ready!</h1>
     <p>Your seed has been created but has not been generated yet. You can see the status of the generator below.</p>
 

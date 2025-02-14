@@ -87,12 +87,8 @@ public class Seed {
         return spoilerLocked;
     }
 
-    public void lockSpoiler() {
-        spoilerLocked = true;
-    }
-
-    public void unlockSpoiler() {
-        spoilerLocked = false;
+    public void setSpoilerLocked(boolean spoilerLocked) {
+        this.spoilerLocked = spoilerLocked;
     }
 
     public Instant getCreatedAt() {

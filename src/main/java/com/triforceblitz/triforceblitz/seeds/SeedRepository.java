@@ -1,8 +1,8 @@
 package com.triforceblitz.triforceblitz.seeds;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface SeedRepository extends CrudRepository<Seed, UUID> {
+public interface SeedRepository extends JpaRepository<Seed, UUID> {
 }

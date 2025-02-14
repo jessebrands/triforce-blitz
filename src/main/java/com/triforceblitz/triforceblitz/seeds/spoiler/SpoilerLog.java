@@ -1,4 +1,4 @@
-package com.triforceblitz.triforceblitz.seeds;
+package com.triforceblitz.triforceblitz.seeds.spoiler;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -6,7 +6,7 @@ import java.util.List;
 
 public class SpoilerLog {
     @JsonProperty(":version")
-    private String randomizerVersion;
+    private String getVersion;
 
     @JsonProperty("file_hash")
     private List<String> hash;
@@ -17,8 +17,8 @@ public class SpoilerLog {
     @JsonProperty(":settings_string")
     private String settingsString;
 
-    public String getRandomizerVersion() {
-        return randomizerVersion;
+    public String getGetVersion() {
+        return getVersion;
     }
 
     public List<String> getHash() {

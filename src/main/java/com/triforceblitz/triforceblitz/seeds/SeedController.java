@@ -1,116 +1,92 @@
 package com.triforceblitz.triforceblitz.seeds;
 
-import com.triforceblitz.triforceblitz.racetime.errors.RaceNotFoundException;
-import com.triforceblitz.triforceblitz.seeds.racetime.InvalidRaceException;
-import com.triforceblitz.triforceblitz.seeds.racetime.RacetimeLockService;
-import jakarta.validation.Valid;
+import com.triforceblitz.triforceblitz.seeds.generator.GeneratedSeed;
+import com.triforceblitz.triforceblitz.seeds.generator.GeneratedSeedService;
+import com.triforceblitz.triforceblitz.seeds.racetime.RacetimeLockDetails;
+import com.triforceblitz.triforceblitz.seeds.racetime.RacetimeLockDetailsService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.UUID;
 
 @Controller
-@RequestMapping("/seeds")
+@RequestMapping("/seeds/{id}")
 public class SeedController {
-    private final SeedService seedService;
-    private final RacetimeLockService lockService;
-    private final FeaturedSeedService featuredSeedService;
+    private final SeedDetailsManager seedManager;
+    private final GeneratedSeedService generatedSeedService;
+    private final RacetimeLockDetailsService racetimeLockService;
 
-    public SeedController(SeedService seedService,
-                          RacetimeLockService lockService,
-                          FeaturedSeedService featuredSeedService) {
-        this.seedService = seedService;
-        this.lockService = lockService;
-        this.featuredSeedService = featuredSeedService;
+    public SeedController(SeedDetailsManager seedManager,
+                          GeneratedSeedService generatedSeedService,
+                          RacetimeLockDetailsService racetimeLockService) {
+        this.seedManager = seedManager;
+        this.generatedSeedService = generatedSeedService;
+        this.racetimeLockService = racetimeLockService;
     }
 
-    @GetMapping("/generate")
-    public String getGeneratorForm(@ModelAttribute("form") GenerateSeedForm form,
-                                   Model model) {
-        return "seeds/generator_form";
+    @ModelAttribute("seed")
+    private SeedDetails getSeed(@PathVariable UUID id) throws SeedNotFoundException {
+        return seedManager.loadSeedById(id);
     }
 
-    @PostMapping("/generate")
-    public String generateSeed(@Valid @ModelAttribute("form") GenerateSeedForm form,
-                               BindingResult bindingResult,
-                               Model model) {
-        if (form.getUnlockMode() == UnlockMode.RACETIME && form.getRacetimeUrl() == null) {
-            bindingResult.rejectValue(
-                    "racetimeUrl",
-                    "seeds.generator.form.racetime-url.required"
-            );
+    @ModelAttribute("generatedSeed")
+    private GeneratedSeed getGeneratedSeed(@PathVariable UUID id) {
+        try {
+            return generatedSeedService.loadGeneratedSeedBySeedId(id);
+        } catch (SeedNotGeneratedException e) {
+            return null;
         }
-        if (bindingResult.hasErrors()) {
-            return "seeds/generator_form";
-        }
-
-        var seed = seedService.createSeed(true);
-        // Set the spoiler log mode.
-        if (form.getUnlockMode() == UnlockMode.LOCKED) {
-            seedService.lockSpoilerLog(seed.id());
-        } else if (form.getUnlockMode() == UnlockMode.RACETIME) {
-            try {
-                lockService.lockSpoilerLog(seed.id(), "ootr", form.getRaceSlug());
-            } catch (RaceNotFoundException e) {
-                bindingResult.rejectValue(
-                        "racetimeUrl",
-                        "seeds.generator.form.racetime-url.not-found"
-                );
-            } catch (InvalidRaceException e) {
-                bindingResult.rejectValue(
-                        "racetimeUrl",
-                        "seeds.generator.form.racetime-url.not-valid"
-                );
-            }
-        } else {
-            seedService.unlockSpoilerLog(seed.id());
-        }
-        if (bindingResult.hasErrors()) {
-            seedService.deleteSeed(seed.id());
-            return "seeds/generator_form";
-        }
-        seedService.generateSeed(seed.id());
-        return "redirect:/seeds/" + seed.id();
     }
 
-    @GetMapping("/{id}")
-    public String getSeed(@PathVariable UUID id, Model model) {
-        model.addAttribute("seed", seedService.getById(id).orElse(null));
+    @ModelAttribute("racetimeLock")
+    private RacetimeLockDetails getRacetimeLock(@PathVariable UUID id) {
+        try {
+            return racetimeLockService.findRacetimeLockBySeedId(id);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @GetMapping
+    public String getSeed() {
         return "seeds/seed";
     }
 
-    @GetMapping("/{id}/patch")
-    public ResponseEntity<Resource> getPatchFile(@PathVariable UUID id) throws IOException {
-        var patchFilename = seedService.getPatchFilename(id);
-        var resource = new ByteArrayResource(Files.readAllBytes(patchFilename));
+    @GetMapping("/patch")
+    public ResponseEntity<Resource> getPatchFile(@ModelAttribute("generatedSeed") GeneratedSeed generatedSeed)
+            throws SeedNotGeneratedException, IOException {
+        if (generatedSeed == null) {
+            throw new SeedNotGeneratedException("seed is not generated");
+        }
 
+        var patchFilename = generatedSeed.patchFilename();
+        var resource = new ByteArrayResource(Files.readAllBytes(patchFilename));
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
     }
 
-    @GetMapping("/{id}/spoiler")
-    public ResponseEntity<Resource> getSpoilerLog(@PathVariable UUID id) throws IOException {
-        var spoilerFilename = seedService.getSpoilerLogFilename(id);
+    @GetMapping("/spoiler")
+    public ResponseEntity<Resource> getSpoilerLog(@ModelAttribute("generatedSeed") GeneratedSeed generatedSeed)
+            throws SeedNotGeneratedException, IOException {
+        if (generatedSeed == null) {
+            throw new SeedNotGeneratedException("seed is not generated");
+        }
+
+        var spoilerFilename = generatedSeed.spoilerLogFilename();
         var resource = new ByteArrayResource(Files.readAllBytes(spoilerFilename));
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(resource);
-    }
-
-    @GetMapping("/featured")
-    public String featuredSeeds(Model model) {
-        model.addAttribute("dailySeed", featuredSeedService.getDailySeed());
-        model.addAttribute("weeklySeed", featuredSeedService.getWeeklySeed());
-        return "seeds/featured_seeds";
     }
 }
