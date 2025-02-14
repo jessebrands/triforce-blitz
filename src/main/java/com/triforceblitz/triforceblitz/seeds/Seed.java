@@ -39,7 +39,7 @@ public class Seed {
     private final Instant createdAt;
 
     @Nullable
-    @OneToOne(mappedBy = "seed", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "seed", cascade = CascadeType.ALL, orphanRemoval = true)
     private RacetimeLock racetimeLock;
 
     @Nullable
@@ -101,8 +101,12 @@ public class Seed {
         return racetimeLock;
     }
 
-    public void setRacetimeLock(@Nullable RacetimeLock racetimeLock) {
-        this.racetimeLock = racetimeLock;
+    public void addRacetimeLock(String category, String slug) {
+        this.racetimeLock = new RacetimeLock(slug, this);
+    }
+
+    public void removeRacetimeLock() {
+        this.racetimeLock = null;
     }
 
     @Nullable

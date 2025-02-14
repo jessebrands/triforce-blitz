@@ -33,6 +33,10 @@ public class RacetimeLock {
         return id;
     }
 
+    public String getRaceCategory() {
+        return "ootr";
+    }
+
     public String getRaceSlug() {
         return raceSlug;
     }
