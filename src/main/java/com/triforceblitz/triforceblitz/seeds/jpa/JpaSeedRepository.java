@@ -49,6 +49,16 @@ public interface JpaSeedRepository extends SeedRepository, JpaRepository<Seed, U
     List<Seed> findAllLockedPreviousDailySeeds();
 
     @Query("""
+            select distinct seed from Seed seed
+            join fetch seed.feature feature
+            where feature.weekly = true
+              and seed.spoilerLocked = true
+              and feature.date != CURRENT_DATE
+            order by feature.date desc
+            """)
+    List<Seed> findAllLockedPreviousWeeklySeeds();
+
+    @Query("""
             select count(seed) > 0 from Seed seed
             left join seed.feature feature
             where feature.daily = true and feature.date = :date

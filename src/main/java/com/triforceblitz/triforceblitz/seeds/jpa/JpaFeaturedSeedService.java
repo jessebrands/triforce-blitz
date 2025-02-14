@@ -65,6 +65,17 @@ public class JpaFeaturedSeedService implements FeaturedSeedService {
         }
     }
 
+    @Transactional
+    @Scheduled(cron = "0 0 19 * * FRI")
+    public void unlockPreviouslyWeeklySeed() {
+        log.info("Checking for previous Seed of the Week!");
+        var previousWeeklies = seedRepository.findAllLockedPreviousWeeklySeeds();
+        for (var seed : previousWeeklies) {
+            spoilerLogManager.unlockSpoilerLog(seed.getId());
+            log.info("Unlocked spoiler log for Seed of the Week {}", seed.getFeature().getDate());
+        }
+    }
+
     @Nullable
     @Override
     public FeaturedSeedDetails getDailySeed() {

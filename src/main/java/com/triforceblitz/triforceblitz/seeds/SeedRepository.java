@@ -16,6 +16,8 @@ public interface SeedRepository {
 
     List<Seed> findAllLockedPreviousDailySeeds();
 
+    List<Seed> findAllLockedPreviousWeeklySeeds();
+
     Seed save(Seed seed);
 
     boolean existsById(UUID id);
