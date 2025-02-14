@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "featured_seeds")
-public class FeaturedSeed {
+public class Feature {
     @Id
     @Column(name = "id", nullable = false)
     private final UUID id;
@@ -31,21 +31,14 @@ public class FeaturedSeed {
     @Column(name = "added_at", nullable = false)
     private Instant addedAt = Instant.now();
 
-    protected FeaturedSeed() {
+    protected Feature() {
         this.id = null;
     }
 
-    public FeaturedSeed(Seed seed) {
+    public Feature(Seed seed) {
         this.id = UUID.randomUUID();
         this.seed = seed;
     }
-
-    public FeaturedSeed(Seed seed, LocalDate date) {
-        this.id = UUID.randomUUID();
-        this.seed = seed;
-        this.date = date;
-    }
-
 
     public UUID getId() {
         return id;

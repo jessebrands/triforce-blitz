@@ -43,8 +43,8 @@ public class Seed {
     private RacetimeLock racetimeLock;
 
     @Nullable
-    @OneToOne(mappedBy = "seed", cascade = CascadeType.ALL)
-    private FeaturedSeed featuredSeed;
+    @OneToOne(mappedBy = "seed", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Feature feature;
 
     protected Seed() {
         this.id = null;
@@ -110,15 +110,20 @@ public class Seed {
     }
 
     @Nullable
-    public FeaturedSeed getFeaturedSeed() {
-        return featuredSeed;
+    public Feature getFeature() {
+        return feature;
     }
 
-    public void setFeaturedSeed(@Nullable FeaturedSeed featuredSeed) {
-        this.featuredSeed = featuredSeed;
+    public Feature addFeature() {
+        this.feature = new Feature(this);
+        return this.feature;
+    }
+
+    public void removeFeature() {
+        this.feature = null;
     }
 
     public boolean isFeatured() {
-        return featuredSeed != null;
+        return feature != null;
     }
 }

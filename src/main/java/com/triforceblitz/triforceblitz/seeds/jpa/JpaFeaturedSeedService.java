@@ -22,25 +22,22 @@ public class JpaFeaturedSeedService implements FeaturedSeedService {
     private final GeneratorService generatorService;
     private final SpoilerLogManager spoilerLogManager;
     private final SeedRepository seedRepository;
-    private final FeaturedSeedRepository featuredSeedRepository;
 
     public JpaFeaturedSeedService(SeedDetailsManager seedManager,
                                   GeneratorService generatorService,
                                   SpoilerLogManager spoilerLogManager,
-                                  SeedRepository seedRepository,
-                                  FeaturedSeedRepository featuredSeedRepository) {
+                                  SeedRepository seedRepository) {
         this.seedManager = seedManager;
         this.generatorService = generatorService;
         this.spoilerLogManager = spoilerLogManager;
         this.seedRepository = seedRepository;
-        this.featuredSeedRepository = featuredSeedRepository;
     }
 
     @Transactional
     @Scheduled(cron = "0 0 19 * * *")
     public void generateSeedOfTheDay() throws Exception {
         var today = LocalDate.now();
-        if (featuredSeedRepository.existsByDateAndDaily(today, true)) {
+        if (seedRepository.dailySeedExistsByDate(today)) {
             log.warn("Seed of the Day for {} already exists, skipping!", today);
             return;
         }
@@ -61,18 +58,17 @@ public class JpaFeaturedSeedService implements FeaturedSeedService {
     @Scheduled(cron = "0 0 19 * * *")
     public void unlockPreviousDailySeed() {
         log.info("Checking for previous dailies!");
-        var previousDailies = featuredSeedRepository.findAllLockedPreviousDailySeeds();
-        for (var daily : previousDailies) {
-            var seed = daily.getSeed();
+        var previousDailies = seedRepository.findAllLockedPreviousDailySeeds();
+        for (var seed : previousDailies) {
             spoilerLogManager.unlockSpoilerLog(seed.getId());
-            log.info("Unlocked spoiler log for Seed of the Day {}", daily.getDate());
+            log.info("Unlocked spoiler log for Seed of the Day {}", seed.getFeature().getDate());
         }
     }
 
     @Nullable
     @Override
     public FeaturedSeedDetails getDailySeed() {
-        return featuredSeedRepository.findLatestDailySeed()
+        return seedRepository.findLatestDailySeed()
                 .map(FeaturedSeedDetails::from)
                 .orElse(null);
     }
@@ -80,7 +76,7 @@ public class JpaFeaturedSeedService implements FeaturedSeedService {
     @Nullable
     @Override
     public FeaturedSeedDetails getWeeklySeed() {
-        return featuredSeedRepository.findLatestWeeklySeed()
+        return seedRepository.findLatestWeeklySeed()
                 .map(FeaturedSeedDetails::from)
                 .orElse(null);
     }
@@ -88,17 +84,17 @@ public class JpaFeaturedSeedService implements FeaturedSeedService {
     @Override
     public void createDailySeed(UUID seedId) {
         var seed = seedRepository.findById(seedId).orElseThrow();
-        var featuredSeed = new FeaturedSeed(seed);
-        featuredSeed.setDaily(true);
-        featuredSeedRepository.save(featuredSeed);
+        var feature = seed.addFeature();
+        feature.setDaily(true);
+        seedRepository.save(seed);
     }
 
     @Override
     public void createWeeklySeed(UUID seedId) {
         var seed = seedRepository.findById(seedId).orElseThrow();
-        var featuredSeed = new FeaturedSeed(seed);
-        featuredSeed.setDaily(true);
-        featuredSeed.setWeekly(true);
-        featuredSeedRepository.save(featuredSeed);
+        var feature = seed.addFeature();
+        feature.setDaily(true);
+        feature.setWeekly(true);
+        seedRepository.save(seed);
     }
 }

@@ -13,15 +13,17 @@ public record FeaturedSeedDetails(
         boolean cooperative,
         boolean spoilerLocked
 ) {
-    public static FeaturedSeedDetails from(FeaturedSeed featuredSeed) {
+    public static FeaturedSeedDetails from(Seed seed) {
+        var feature = seed.getFeature();
+        assert feature != null;
         return new FeaturedSeedDetails(
-                featuredSeed.getSeed().getId(),
-                featuredSeed.getDate(),
-                featuredSeed.getAddedAt(),
-                featuredSeed.isDaily(),
-                featuredSeed.isWeekly(),
-                featuredSeed.getSeed().isCooperative(),
-                featuredSeed.getSeed().isSpoilerLocked()
+                seed.getId(),
+                feature.getDate(),
+                feature.getAddedAt(),
+                feature.isDaily(),
+                feature.isWeekly(),
+                seed.isCooperative(),
+                seed.isSpoilerLocked()
         );
     }
 }
