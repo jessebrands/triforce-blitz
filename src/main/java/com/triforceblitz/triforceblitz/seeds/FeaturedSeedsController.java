@@ -14,7 +14,7 @@ public class FeaturedSeedsController {
         this.featuredSeedService = featuredSeedService;
     }
 
-    @GetMapping("/featured")
+    @GetMapping
     public String featuredSeeds(Model model) {
         model.addAttribute("dailySeed", featuredSeedService.getDailySeed());
         model.addAttribute("weeklySeed", featuredSeedService.getWeeklySeed());
