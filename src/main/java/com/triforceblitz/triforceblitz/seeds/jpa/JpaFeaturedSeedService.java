@@ -1,7 +1,8 @@
-package com.triforceblitz.triforceblitz.seeds;
+package com.triforceblitz.triforceblitz.seeds.jpa;
 
+import com.triforceblitz.triforceblitz.seeds.*;
 import com.triforceblitz.triforceblitz.seeds.generator.GeneratorService;
-import com.triforceblitz.triforceblitz.seeds.spoiler.SpoilerLogManager;
+import com.triforceblitz.triforceblitz.seeds.spoilerlog.SpoilerLogManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;

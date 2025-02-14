@@ -1,6 +1,8 @@
-package com.triforceblitz.triforceblitz.seeds;
+package com.triforceblitz.triforceblitz.seeds.jpa;
 
 import com.triforceblitz.triforceblitz.TriforceBlitzConfig;
+import com.triforceblitz.triforceblitz.seeds.*;
+import com.triforceblitz.triforceblitz.seeds.errors.SeedNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;

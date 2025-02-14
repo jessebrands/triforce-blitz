@@ -1,4 +1,7 @@
-package com.triforceblitz.triforceblitz.seeds;
+package com.triforceblitz.triforceblitz.seeds.jpa;
+
+import com.triforceblitz.triforceblitz.seeds.Seed;
+import com.triforceblitz.triforceblitz.seeds.SeedDetails;
 
 import java.time.Instant;
 import java.util.UUID;

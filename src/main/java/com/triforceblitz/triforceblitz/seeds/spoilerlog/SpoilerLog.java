@@ -1,4 +1,4 @@
-package com.triforceblitz.triforceblitz.seeds.spoiler;
+package com.triforceblitz.triforceblitz.seeds.spoilerlog;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -1,7 +1,7 @@
 package com.triforceblitz.triforceblitz.seeds.generator;
 
 import com.triforceblitz.triforceblitz.TriforceBlitzConfig;
-import com.triforceblitz.triforceblitz.seeds.SeedNotGeneratedException;
+import com.triforceblitz.triforceblitz.seeds.errors.SeedNotGeneratedException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;

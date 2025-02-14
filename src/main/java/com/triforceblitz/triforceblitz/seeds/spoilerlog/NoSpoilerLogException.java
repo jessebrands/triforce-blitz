@@ -1,4 +1,4 @@
-package com.triforceblitz.triforceblitz.seeds.spoiler;
+package com.triforceblitz.triforceblitz.seeds.spoilerlog;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

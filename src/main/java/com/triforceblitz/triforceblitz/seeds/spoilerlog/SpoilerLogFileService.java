@@ -1,4 +1,4 @@
-package com.triforceblitz.triforceblitz.seeds.spoiler;
+package com.triforceblitz.triforceblitz.seeds.spoilerlog;
 
 import java.nio.file.Path;
 import java.util.UUID;

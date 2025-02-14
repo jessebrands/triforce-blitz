@@ -1,10 +1,11 @@
 package com.triforceblitz.triforceblitz.seeds;
 
 import com.triforceblitz.triforceblitz.racetime.errors.RaceNotFoundException;
+import com.triforceblitz.triforceblitz.seeds.forms.GenerateSeedForm;
 import com.triforceblitz.triforceblitz.seeds.generator.GeneratorService;
 import com.triforceblitz.triforceblitz.seeds.racetime.InvalidRaceException;
 import com.triforceblitz.triforceblitz.seeds.racetime.JpaRacetimeLockManager;
-import com.triforceblitz.triforceblitz.seeds.spoiler.SpoilerLogManager;
+import com.triforceblitz.triforceblitz.seeds.spoilerlog.SpoilerLogManager;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;

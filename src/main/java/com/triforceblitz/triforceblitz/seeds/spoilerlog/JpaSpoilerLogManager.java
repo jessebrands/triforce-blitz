@@ -1,10 +1,10 @@
-package com.triforceblitz.triforceblitz.seeds.spoiler;
+package com.triforceblitz.triforceblitz.seeds.spoilerlog;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.triforceblitz.triforceblitz.TriforceBlitzConfig;
 import com.triforceblitz.triforceblitz.seeds.Seed;
-import com.triforceblitz.triforceblitz.seeds.SeedNotFoundException;
-import com.triforceblitz.triforceblitz.seeds.SeedNotGeneratedException;
+import com.triforceblitz.triforceblitz.seeds.errors.SeedNotFoundException;
+import com.triforceblitz.triforceblitz.seeds.errors.SeedNotGeneratedException;
 import com.triforceblitz.triforceblitz.seeds.SeedRepository;
 import com.triforceblitz.triforceblitz.seeds.generator.GeneratedSeedService;
 import org.springframework.stereotype.Service;

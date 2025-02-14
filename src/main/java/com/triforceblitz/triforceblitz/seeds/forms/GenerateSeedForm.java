@@ -1,5 +1,6 @@
-package com.triforceblitz.triforceblitz.seeds;
+package com.triforceblitz.triforceblitz.seeds.forms;
 
+import com.triforceblitz.triforceblitz.seeds.UnlockMode;
 import com.triforceblitz.triforceblitz.seeds.validators.RacetimeRaceUrl;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.lang.Nullable;

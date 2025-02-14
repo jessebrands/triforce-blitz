@@ -3,7 +3,7 @@ package com.triforceblitz.triforceblitz.seeds.racetime;
 import com.triforceblitz.triforceblitz.racetime.RacetimeService;
 import com.triforceblitz.triforceblitz.racetime.errors.RaceNotFoundException;
 import com.triforceblitz.triforceblitz.seeds.SeedRepository;
-import com.triforceblitz.triforceblitz.seeds.spoiler.SpoilerLogManager;
+import com.triforceblitz.triforceblitz.seeds.spoilerlog.SpoilerLogManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;

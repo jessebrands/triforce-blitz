@@ -1,6 +1,6 @@
-package com.triforceblitz.triforceblitz.seeds.spoiler;
+package com.triforceblitz.triforceblitz.seeds.spoilerlog;
 
-import com.triforceblitz.triforceblitz.seeds.SeedNotGeneratedException;
+import com.triforceblitz.triforceblitz.seeds.errors.SeedNotGeneratedException;
 
 import java.util.UUID;
 
