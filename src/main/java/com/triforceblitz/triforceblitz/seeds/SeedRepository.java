@@ -1,16 +1,17 @@
 package com.triforceblitz.triforceblitz.seeds;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-public interface SeedRepository extends JpaRepository<Seed, UUID> {
-    @Query("""
-            select distinct seed from Seed seed
-            join fetch seed.racetimeLock lock
-            where seed.spoilerLocked = true
-            """)
+public interface SeedRepository {
+    Optional<Seed> findById(UUID id);
+
     List<Seed> findAllRacetimeLockedSeeds();
+
+    Seed save(Seed seed);
+
+    boolean existsById(UUID id);
+
+    void deleteById(UUID id);
 }
