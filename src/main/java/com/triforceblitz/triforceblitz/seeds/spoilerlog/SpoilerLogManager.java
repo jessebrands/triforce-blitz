@@ -4,7 +4,7 @@ import com.triforceblitz.triforceblitz.seeds.errors.SeedNotFoundException;
 
 import java.util.UUID;
 
-public interface SpoilerLogManager extends SpoilerLogService, SpoilerLogFileService {
+public interface SpoilerLogManager extends SpoilerLogService {
     void lockSpoilerLog(UUID seedId);
 
     void unlockSpoilerLog(UUID seedId);
